@@ -1,0 +1,60 @@
+### Create client
+POST http://localhost:4500/clients
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "João da Silva",
+  "email": "joao.silva@example.com",
+  "document": "12345678909",
+  "address": {
+    "street": "Rua das Flores",
+    "number": "123",
+    "city": "São Paulo",
+    "state": "SP",
+    "zip_code": "01001-000",
+    "complement": "Apto 101"
+  },
+  "phone": "11999999999",
+  "observations": "Cliente de teste"
+}
+
+# curl equivalent (optional):
+# curl -sS -X POST http://localhost/clients \
+#   -H "Content-Type: application/json" \
+#   -d '@-' <<'JSON'
+# { ... }
+# JSON
+
+### Get all clients
+GET http://localhost:4500/clients/0199921d-e56f-7945-14c8-738e79705f1b
+Accept: application/json 
+
+### Update client
+PUT http://localhost:4500/clients/0199921d-e56f-7945-14c8-738e79705f1b
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "João da Silva dos Santos",
+  "email": "joao.silva@example.com",
+  "document": "12345678909",
+  "address": {
+    "street": "Rua das Flores",
+    "number": "123",
+    "city": "Salvador",
+    "state": "BA",
+    "zip_code": "01001-000"
+  },
+  "phone": "11999999999",
+  "observations": "Cliente de teste"
+}
+
+### Delete client
+DELETE http://localhost:4500/clients/0199921d-e56f-7945-14c8-738e79705f1b
+Accept: application/json
+
+### Find client by filters
+
+GET http://localhost:4500/clients/filters?page=1&limit=10&sort=desc&sortField=name&columnSearch[0][field]=name&columnSearch[0][value]=Helena Cervantes Alves Sobrinho
+Accept: application/json

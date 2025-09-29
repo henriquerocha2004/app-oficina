@@ -8,6 +8,7 @@ defineProps<{ client: ClientInterface }>();
 
 const onEditClient = inject<(client: ClientInterface) => void>('onEditClient');
 const onViewClient = inject<(client: ClientInterface) => void>('onViewClient');
+const onDeleteClient = inject<(client: ClientInterface) => void>('onDeleteClient');
 
 </script>
 <template>
@@ -18,7 +19,7 @@ const onViewClient = inject<(client: ClientInterface) => void>('onViewClient');
         <Button size="icon" variant="outline" @click="onEditClient && onEditClient(client)">
             <Edit class="h-4 w-4" />
         </Button>
-        <Button size="icon" variant="outline" @click="console.log('deletar')">
+        <Button size="icon" variant="outline" @click="onDeleteClient && onDeleteClient(client)">
             <Trash class="h-4 w-4" />
         </Button>
     </div>

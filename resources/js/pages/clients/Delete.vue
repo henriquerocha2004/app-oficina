@@ -1,23 +1,25 @@
 <script setup lang="ts">
 import { Button } from "@/components/ui/button"
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogClose,
 } from "@/components/ui/dialog"
+import { ClientInterface } from "./client";
 
 export interface DeleteClientProps {
-  show: boolean
-  clientId?: string | null
+    show: boolean
+    client?: ClientInterface | null
 }
 
 const props = defineProps<DeleteClientProps>()
 
 </script>
-<template>                                                                                                              
+<template>
     <div>
         <Dialog :open="props.show" @update:open="(value) => $emit('update:show', value)">
             <DialogContent>
@@ -28,7 +30,9 @@ const props = defineProps<DeleteClientProps>()
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
-                    <Button variant="outline">Cancelar</Button>
+                    <DialogClose asChild>
+                        <Button variant="outline">Cancelar</Button>
+                    </DialogClose>
                     <Button variant="destructive">Deletar</Button>
                 </DialogFooter>
             </DialogContent>

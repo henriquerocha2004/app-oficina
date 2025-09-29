@@ -21,6 +21,14 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
         ]);
+
+        $middleware->validateCsrfTokens(except: [
+            // Exclude specific route
+            'clients',
+
+            // or all routes under /clients
+            'clients/*',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

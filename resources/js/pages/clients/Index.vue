@@ -174,7 +174,7 @@ const showUpdate = ref<boolean>(false);
 const showInfo = ref<boolean>(false);
 const showDelete = ref<boolean>(false);
 const clientToEdit = ref<ClientInterface | null>(null);
-const clientIdToDelete = ref<string | null>(null);
+const clientDelete = ref<ClientInterface | null>(null);
 
 provide('onEditClient', (client: ClientInterface) => {
     console.log('Editar cliente:', client);
@@ -186,8 +186,8 @@ provide('onViewClient', (client: ClientInterface) => {
     showInfo.value = true;
 });
 
-provide('onDeleteClient', (clientId: string) => {
-    clientIdToDelete.value = clientId;
+provide('onDeleteClient', (client: ClientInterface) => {
+    clientDelete.value = client;
     showDelete.value = true;
 });
 
@@ -199,6 +199,6 @@ provide('onDeleteClient', (clientId: string) => {
         <Create :show="showCreate" @update:show="showCreate = $event" />
         <Update :show="showUpdate" @update:show="showUpdate = $event" :client-data="clientToEdit" />
         <Info :show="showInfo" @update:show="showInfo = $event" />
-        <Delete :show="showDelete" @update:show="showDelete = $event" :client-id="clientToEdit?.id"                                                                                              />
+        <Delete :show="showDelete" @update:show="showDelete = $event" :client="clientDelete" />
     </AppLayout>
 </template>
