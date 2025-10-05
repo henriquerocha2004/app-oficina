@@ -17,6 +17,7 @@ it('saves and finds a client by id and document', function () {
 
     $repo->save($client);
 
+    /** @var Client $found */
     $found = $repo->findById($client->id);
     expect($found)->not->toBeNull()
         ->and($found->name)->toBe('Alice')
@@ -36,7 +37,8 @@ it('updates client fields and persists changes', function () {
 
     $updated = $client->withName('Bobby')->withEmail('bobby@example.com')->withObservations('Updated');
     $repo->update($updated);
-
+    
+     /** @var Client $found */
     $found = $repo->findById($client->id);
     expect($found)->not->toBeNull()
         ->and($found->name)->toBe('Bobby')
@@ -89,12 +91,12 @@ it('sorts clients by document_number desc and asc', function () {
     }
 
     $desc = $repo->findAll(new SearchRequest(limit: 10, search: '', sortField: 'document_number', sort: 'desc', page: 1));
-    expect($desc->items[0]['document_number'])->toBe('67887286077')
-        ->and($desc->items[1]['document_number'])->toBe('42603972065');
+    expect($desc->items[0]['document'])->toBe('67887286077')
+        ->and($desc->items[1]['document'])->toBe('42603972065');
 
     $asc = $repo->findAll(new SearchRequest(limit: 10, search: '', sortField: 'document_number', sort: 'asc', page: 1));
-    expect($asc->items[0]['document_number'])->toBe('15540258002')
-        ->and($asc->items[2]['document_number'])->toBe('67887286077');
+    expect($asc->items[0]['document'])->toBe('15540258002')
+        ->and($asc->items[2]['document'])->toBe('67887286077');
 });
 
 it('filters by column search on email and street', function () {
@@ -116,14 +118,15 @@ it('filters by column search on email and street', function () {
     // columnSearch by street
     $respStreet = $repo->findAll(new SearchRequest(limit: 10, search: '', sortField: 'name', sort: 'asc', page: 1, columnSearch: [['field' => 'street', 'value' => 'Main St']]));
     expect($respStreet->totalItems)->toBe(1)
-        ->and($respStreet->items[0]['street'])->toBe('Main St');
+        ->and($respStreet->items[0]['address']['street'])->toBe('Main St');
 });
 
 it('paginates results with edge page/limit values', function () {
     $repo = app(ClientEloquentRepository::class);
 
+    $docs = ['42603972065', '67887286077', '15540258002', '64361235000191', '20825707000144'];
     for ($i = 1; $i <= 5; $i++) {
-        $repo->save(Client::create('User' . $i, "user{$i}@example.com", (string) (70000000000 + $i)));
+        $repo->save(Client::create('User' . $i, "user{$i}@example.com", $docs[$i-1]));
     }
 
     // page 2 with limit 2 should return 2 items (3rd and 4th)

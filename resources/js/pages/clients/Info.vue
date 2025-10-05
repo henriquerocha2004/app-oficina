@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import {
-  Drawer,
-  DrawerContent,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
+    Drawer,
+    DrawerContent,
+    DrawerHeader,
+    DrawerTitle,
 } from '@/components/ui/drawer';
 
 import { Car } from 'lucide-vue-next';
@@ -25,7 +24,8 @@ const props = defineProps<UpdateClientProps>();
                 </DrawerHeader>
                 <div class="flex flex-row gap-4 p-4">
                     <div class="flex flex-col gap-4 border-r-2 w-1/3 pr-4">
-                        <h2 class="mb-5 text-lg font-semibold border-b-1 border-black dark:border-white">Informações Pessoais</h2>
+                        <h2 class="mb-5 text-lg font-semibold border-b-1 border-black dark:border-white">Informações
+                            Pessoais</h2>
                         <div class="flex flex-col gap-1">
                             <p class="text-gray-400 font-bold">Nome Completo</p>
                             <p class="font-bold">João Silva</p>
@@ -34,7 +34,7 @@ const props = defineProps<UpdateClientProps>();
                             <p class="text-gray-400 font-bold">Telefone</p>
                             <p class="font-bold">(11) 98765-4321</p>
                         </div>
-                         <div class="flex flex-col gap-1">
+                        <div class="flex flex-col gap-1">
                             <p class="text-gray-400 font-bold">CPF/CNPJ</p>
                             <p class="font-bold">000.000.000-00</p>
                         </div>
@@ -67,7 +67,8 @@ const props = defineProps<UpdateClientProps>();
                         </div>
                     </div>
                     <div class="flex flex-col gap-4 w-1/3">
-                        <h2 class="mb-5 text-lg font-semibold border-b-1 border-black dark:border-white">Veículos Cadastrados</h2>
+                        <h2 class="mb-5 text-lg font-semibold border-b-1 border-black dark:border-white">Veículos
+                            Cadastrados</h2>
                         <div class="flex flex-col gap-1 rounded-3xl bg-gray-300 p-5">
                             <div class="flex flex-row gap-2">
                                 <Car class="h-6 w-6" />

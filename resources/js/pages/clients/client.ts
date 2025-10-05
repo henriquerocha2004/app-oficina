@@ -3,10 +3,23 @@ export interface ClientInterface {
     name: string;
     email: string;
     document: string;
-    phone: string;
+    phone: Phone;
+    address: Address;
+    observations: string;
+}
+
+export interface Address {
     address: string;
     city: string;
     state: string;
     zipcode: string | undefined;
-    observations: string;
+}
+
+export interface Phone {
+    number: string;
+}
+
+export interface ClientFilterSearchResponse {
+    totalItems: number;
+    items: ClientInterface[];
 }

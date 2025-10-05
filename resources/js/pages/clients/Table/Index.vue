@@ -7,9 +7,9 @@ import type { ColumnDef, ColumnFiltersState, SortingState } from '@tanstack/vue-
 import { FlexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useVueTable } from '@tanstack/vue-table';
 import { ref } from 'vue';
 
+
 const props = defineProps<{
     columns: ColumnDef<TData, TValue>[];
-    data: TData[];
 }>();
 
 const sorting = ref<SortingState>([]);
@@ -18,7 +18,7 @@ const emit = defineEmits(['create']);
 
 const table = useVueTable({
     get data() {
-        return props.data;
+        return [];
     },
     get columns() {
         return props.columns;
@@ -29,6 +29,7 @@ const table = useVueTable({
     onSortingChange: (updaterOrValue: any) => valueUpdater(updaterOrValue, sorting),
     onColumnFiltersChange: (updaterOrValue: any) => valueUpdater(updaterOrValue, columnFilters),
     getFilteredRowModel: getFilteredRowModel(),
+    manualPagination: true,
     state: {
         get sorting() {
             return sorting.value;
@@ -38,17 +39,15 @@ const table = useVueTable({
         },
     },
 });
+
 </script>
 
 <template>
     <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
         <div class="flex justify-between py-4">
-            <Input
-                class="max-w-sm"
-                placeholder="Pesquisar por email ..."
+            <Input class="max-w-sm" placeholder="Pesquisar por email ..."
                 :model-value="table.getColumn('email')?.getFilterValue() as string"
-                @update:model-value="table.getColumn('email')?.setFilterValue($event)"
-            />
+                @update:model-value="table.getColumn('email')?.setFilterValue($event)" />
             <div>
                 <Button @click="emit('create')" variant="default">Novo Cliente</Button>
             </div>
@@ -58,13 +57,15 @@ const table = useVueTable({
                 <TableHeader>
                     <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
                         <TableHead v-for="header in headerGroup.headers" :key="header.id">
-                            <FlexRender v-if="!header.isPlaceholder" :render="header.column.columnDef.header" :props="header.getContext()" />
+                            <FlexRender v-if="!header.isPlaceholder" :render="header.column.columnDef.header"
+                                :props="header.getContext()" />
                         </TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     <template v-if="table.getRowModel().rows?.length">
-                        <TableRow v-for="row in table.getRowModel().rows" :key="row.id" :data-state="row.getIsSelected() ? 'selected' : undefined">
+                        <TableRow v-for="row in table.getRowModel().rows" :key="row.id"
+                            :data-state="row.getIsSelected() ? 'selected' : undefined">
                             <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
                                 <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
                             </TableCell>
@@ -79,8 +80,11 @@ const table = useVueTable({
             </Table>
         </div>
         <div class="flex items-center justify-end space-x-2 py-4">
-            <Button variant="outline" size="sm" :disabled="!table.getCanPreviousPage()" @click="table.previousPage()"> Previous </Button>
-            <Button variant="outline" size="sm" :disabled="!table.getCanNextPage()" @click="table.nextPage()"> Next </Button>
+            <Button variant="outline" size="sm" :disabled="!table.getCanPreviousPage()" @click="table.previousPage()">
+                Previous
+            </Button>
+            <Button variant="outline" size="sm" :disabled="!table.getCanNextPage()" @click="table.nextPage()"> Next
+            </Button>
         </div>
     </div>
 </template>
