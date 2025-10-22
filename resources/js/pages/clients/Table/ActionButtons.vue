@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Button from '@/components/ui/button/Button.vue';
 import { Edit, Trash, View } from 'lucide-vue-next';
-import { ClientInterface } from '../client';
+import { ClientInterface } from '../types';
 import { inject } from 'vue';
 
 defineProps<{ client: ClientInterface }>();

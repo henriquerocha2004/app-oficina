@@ -45,7 +45,7 @@ class UpdateClientUseCase
                 street: $addressData['street'],
                 city: $addressData['city'],
                 state: $addressData['state'],
-                zipCode: $addressData['zip_code'],
+                zipCode: $addressData['zipCode'],
             ));
         }
         if (isset($input->phone)) {

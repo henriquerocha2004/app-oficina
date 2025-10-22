@@ -13,13 +13,13 @@ import SelectItem from '@/components/ui/select/SelectItem.vue';
 import SelectTrigger from '@/components/ui/select/SelectTrigger.vue';
 import SelectValue from '@/components/ui/select/SelectValue.vue';
 import Textarea from '@/components/ui/textarea/Textarea.vue';
-import brasilianStates from './data/brasilianStates';
+import brasilianStates from '@/constants/brasilianStates';
 import { toTypedSchema } from '@vee-validate/zod'
 import { z } from 'zod';
 import { useForm } from 'vee-validate';
 import { cnpj, cpf } from 'cpf-cnpj-validator';
 import { watch, ref, onMounted, nextTick } from 'vue';
-import { ClientInterface } from './client';
+import { ClientInterface } from './types';
 
 const props = defineProps<{ client?: ClientInterface | null }>();
 const emit = defineEmits(['submitted']);
@@ -45,7 +45,7 @@ const form = useForm({
     validationSchema: schema,
 })
 const onSubmit = form.handleSubmit((values) => {
-    emit('submitted', { mode: mode.value, data: values });
+    emit('submitted', { mode: mode.value, data: normalizeFormData(values) });
 });
 const isProgramaticZipcodeChange = ref(false);
 let debounceTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -57,18 +57,33 @@ onMounted(() => {
     }
 })
 
+function normalizeFormData(data: any): ClientInterface {
+    return {
+        name: data.name,
+        phone: data.phone,
+        document: data.document,
+        email: data.email,
+        address: {
+            street: data.address || '',
+            city: data.city || '',
+            state: data.state || '',
+            zipCode: data.zipcode || '',
+        },
+        observations: data.observations || '',
+    };
+}
+
 function fillValues() {
     isProgramaticZipcodeChange.value = true;
-
     form.setValues({
         name: props.client?.name || '',
-        phone: props.client?.phone || '',
+        phone: props.client?.phone.number || '',
         document: props.client?.document || '',
         email: props.client?.email || '',
-        address: props.client?.address || '',
-        city: props.client?.city || '',
-        state: props.client?.state || '',
-        zipcode: props.client?.zipcode || '',
+        address: props.client?.address.street || '',
+        city: props.client?.address.city || '',
+        state: props.client?.address.state || '',
+        zipcode: props.client?.address.zipCode || '',
         observations: props.client?.observations || '',
     });
 
@@ -102,6 +117,16 @@ function fetchAddressByZipcode(zipcode: string | undefined) {
         });
 }
 
+function clear() {
+    form.resetForm();
+    isProgramaticZipcodeChange.value = true;
+    mode.value = 'create';
+
+    nextTick(() => {
+        isProgramaticZipcodeChange.value = false;
+    });
+}
+
 watch(() => form.values.zipcode, (newZipcode) => {
     if (isProgramaticZipcodeChange.value) return;
     if (debounceTimeout) clearTimeout(debounceTimeout);
@@ -110,10 +135,14 @@ watch(() => form.values.zipcode, (newZipcode) => {
     }, 500);
 });
 
+defineExpose({
+    clear,
+});
+
 </script>
 <template>
     <div>
-        <form @submit="onSubmit">
+        <form @submit.prevent="onSubmit">
             <div class="flex flex-col gap-4">
                 <FormField v-slot="{ componentField }" name="name">
                     <FormItem>

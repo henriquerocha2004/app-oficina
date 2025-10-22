@@ -1,5 +1,5 @@
 export interface ClientInterface {
-    id: string;
+    id?: string;
     name: string;
     email: string;
     document: string;
@@ -9,17 +9,21 @@ export interface ClientInterface {
 }
 
 export interface Address {
-    address: string;
+    street: string;
     city: string;
     state: string;
-    zipcode: string | undefined;
+    zipCode: string | undefined;
 }
 
 export interface Phone {
     number: string;
 }
 
-export interface ClientFilterSearchResponse {
+export interface ClientsResult {
     totalItems: number;
     items: ClientInterface[];
+}
+
+export interface ClientFilterSearchResponse {
+    clients: ClientsResult;
 }

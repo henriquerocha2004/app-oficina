@@ -3,8 +3,9 @@ import { ColumnDef } from '@tanstack/vue-table';
 import { cnpj, cpf } from 'cpf-cnpj-validator';
 import { ArrowUpDown } from 'lucide-vue-next';
 import { h } from 'vue';
-import { ClientInterface } from '../client';
-import Actions from './Actions.vue';
+import { ClientInterface } from '../types';
+import Actions from '@/pages/clients/Table/ActionButtons.vue';
+import formatPhone from '@/utils/formatPhone';
 
 export const columns: ColumnDef<ClientInterface>[] = [
     {
@@ -42,6 +43,9 @@ export const columns: ColumnDef<ClientInterface>[] = [
     {
         accessorKey: 'phone',
         header: 'Telefone',
+        cell: ({ row }: { row: { original: ClientInterface } }) => {
+            return formatPhone(row.original.phone.number);
+        },
     },
     {
         accessorKey: 'id',

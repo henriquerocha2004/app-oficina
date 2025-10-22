@@ -21,7 +21,7 @@ class ClientRequest extends FormRequest
             'address.street' => ['required', 'string', 'max:255'],
             'address.city' => ['required', 'string', 'max:100'],
             'address.state' => ['required', 'string', 'max:100'],
-            'address.zip_code' => ['required', 'string', 'max:10'],
+            'address.zipCode' => ['required', 'string', 'max:10'],
             'phone' => ['required', 'string', 'max:15'],                                
             'observations' => ['nullable', 'string'],
         ];

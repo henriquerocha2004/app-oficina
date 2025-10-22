@@ -33,7 +33,7 @@ class CreateClientUseCase
                 street: $data->address['street'],
                 city: $data->address['city'],
                 state: $data->address['state'],
-                zipCode: $data->address['zip_code'],
+                zipCode: $data->address['zipCode'],
             );
 
             $client = $client->withAddress($address);

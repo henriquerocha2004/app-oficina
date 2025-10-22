@@ -1,24 +1,30 @@
-<script setup lang="ts" generic="TData, TValue">
+<script setup lang="ts">
 import Button from '@/components/ui/button/Button.vue';
 import Input from '@/components/ui/input/Input.vue';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { valueUpdater } from '@/lib/utils';
-import type { ColumnDef, ColumnFiltersState, SortingState } from '@tanstack/vue-table';
+import type { ColumnDef, ColumnFiltersState } from '@tanstack/vue-table';
 import { FlexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useVueTable } from '@tanstack/vue-table';
+import { ClientInterface } from '../types';
+import { useClientsTable } from '@/pages/clients/composables/useClientsTable';
 import { ref } from 'vue';
 
-
 const props = defineProps<{
-    columns: ColumnDef<TData, TValue>[];
+    columns: ColumnDef<ClientInterface>[];
 }>();
 
-const sorting = ref<SortingState>([]);
+const {
+    clientsData, totalItems,
+    currentPage, pageSize, searchTerm, sorting,
+    fetchClients, onSortingChange, goToNextPage, goToPreviousPage
+} = useClientsTable();
+
 const columnFilters = ref<ColumnFiltersState>([]);
 const emit = defineEmits(['create']);
 
 const table = useVueTable({
     get data() {
-        return [];
+        return clientsData.value;
     },
     get columns() {
         return props.columns;
@@ -26,8 +32,14 @@ const table = useVueTable({
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    onSortingChange: (updaterOrValue: any) => valueUpdater(updaterOrValue, sorting),
-    onColumnFiltersChange: (updaterOrValue: any) => valueUpdater(updaterOrValue, columnFilters),
+    onSortingChange: (updaterOrValue: any) => {
+        const next = typeof updaterOrValue === 'function' ? updaterOrValue(sorting.value) : updaterOrValue;
+        onSortingChange(next);
+    },
+    onColumnFiltersChange: (updaterOrValue: any) => {
+        valueUpdater(updaterOrValue, columnFilters)
+        fetchClients();
+    },
     getFilteredRowModel: getFilteredRowModel(),
     manualPagination: true,
     state: {
@@ -40,14 +52,16 @@ const table = useVueTable({
     },
 });
 
+defineExpose({
+    fetchClients,
+});
+
 </script>
 
 <template>
     <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
         <div class="flex justify-between py-4">
-            <Input class="max-w-sm" placeholder="Pesquisar por email ..."
-                :model-value="table.getColumn('email')?.getFilterValue() as string"
-                @update:model-value="table.getColumn('email')?.setFilterValue($event)" />
+            <Input class="max-w-sm" placeholder="Pesquisar ..." v-model="searchTerm" />
             <div>
                 <Button @click="emit('create')" variant="default">Novo Cliente</Button>
             </div>
@@ -80,10 +94,11 @@ const table = useVueTable({
             </Table>
         </div>
         <div class="flex items-center justify-end space-x-2 py-4">
-            <Button variant="outline" size="sm" :disabled="!table.getCanPreviousPage()" @click="table.previousPage()">
-                Previous
+            <Button variant="outline" size="sm" :disabled="currentPage <= 1" @click="goToPreviousPage">
+                Página Anterior
             </Button>
-            <Button variant="outline" size="sm" :disabled="!table.getCanNextPage()" @click="table.nextPage()"> Next
+            <Button variant="outline" size="sm" :disabled="currentPage * pageSize >= totalItems" @click="goToNextPage">
+                Próxima Página
             </Button>
         </div>
     </div>

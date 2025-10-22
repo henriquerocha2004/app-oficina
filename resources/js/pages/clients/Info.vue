@@ -7,9 +7,13 @@ import {
 } from '@/components/ui/drawer';
 
 import { Car } from 'lucide-vue-next';
+import { ClientInterface } from './types';
+import formatPhone from '@/utils/formatPhone';
+import formatDocument from '@/utils/formatDocument';
 
 export interface UpdateClientProps {
     show: boolean;
+    client?: ClientInterface | null;
 }
 
 const props = defineProps<UpdateClientProps>();
@@ -28,42 +32,42 @@ const props = defineProps<UpdateClientProps>();
                             Pessoais</h2>
                         <div class="flex flex-col gap-1">
                             <p class="text-gray-400 font-bold">Nome Completo</p>
-                            <p class="font-bold">João Silva</p>
+                            <p class="font-bold">{{ props.client?.name }}</p>
                         </div>
                         <div class="flex flex-col gap-1">
                             <p class="text-gray-400 font-bold">Telefone</p>
-                            <p class="font-bold">(11) 98765-4321</p>
+                            <p class="font-bold">{{ formatPhone(props.client?.phone.number ?? '') }}</p>
                         </div>
                         <div class="flex flex-col gap-1">
                             <p class="text-gray-400 font-bold">CPF/CNPJ</p>
-                            <p class="font-bold">000.000.000-00</p>
+                            <p class="font-bold">{{ formatDocument(props.client?.document ?? '') }}</p>
                         </div>
                         <div class="flex flex-col gap-1">
                             <p class="text-gray-400 font-bold">Email</p>
-                            <p class="font-bold">joao.silva@example.com</p>
+                            <p class="font-bold">{{ props.client?.email }}</p>
                         </div>
                     </div>
                     <div class="flex flex-col gap-4 border-r-2 w-1/3 pr-4">
                         <h2 class="mb-5 text-lg font-semibold border-b-1 border-black dark:border-white">Endereço</h2>
                         <div class="flex flex-col gap-1">
                             <p class="text-gray-400 font-bold">Rua</p>
-                            <p class="font-bold">Av. Brasil, 1234</p>
+                            <p class="font-bold">{{ props.client?.address.street }}</p>
                         </div>
                         <div class="flex flex-col gap-1">
                             <p class="text-gray-400 font-bold">Cidade</p>
-                            <p class="font-bold">São Paulo</p>
+                            <p class="font-bold">{{ props.client?.address.city }}</p>
                         </div>
                         <div class="flex flex-col gap-1">
                             <p class="text-gray-400 font-bold">Estado</p>
-                            <p class="font-bold">SP</p>
+                            <p class="font-bold">{{ props.client?.address.state }}</p>
                         </div>
                         <div class="flex flex-col gap-1">
                             <p class="text-gray-400 font-bold">CEP</p>
-                            <p class="font-bold">01234-567</p>
+                            <p class="font-bold">{{ props.client?.address.zipCode }}</p>
                         </div>
                         <div class="flex flex-col gap-1">
                             <p class="text-gray-400 font-bold">Observações</p>
-                            <p class="font-bold">Cliente VIP</p>
+                            <p class="font-bold">{{ props.client?.observations }}</p>
                         </div>
                     </div>
                     <div class="flex flex-col gap-4 w-1/3">

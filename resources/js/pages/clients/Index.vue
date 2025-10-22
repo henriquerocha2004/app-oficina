@@ -6,7 +6,7 @@ import { provide, ref } from 'vue';
 import Create from './Create.vue';
 import Table from './Table/Index.vue';
 import { columns } from './Table/columns';
-import { ClientInterface } from './client';
+import { ClientInterface } from './types';
 import Update from './Update.vue';
 import Info from './Info.vue';
 import Delete from './Delete.vue';
@@ -28,6 +28,7 @@ const showInfo = ref<boolean>(false);
 const showDelete = ref<boolean>(false);
 const clientToEdit = ref<ClientInterface | null>(null);
 const clientDelete = ref<ClientInterface | null>(null);
+const tableComponent = ref<InstanceType<typeof Table> | null>(null);
 
 provide('onEditClient', (client: ClientInterface) => {
     console.log('Editar cliente:', client);
@@ -44,14 +45,20 @@ provide('onDeleteClient', (client: ClientInterface) => {
     showDelete.value = true;
 });
 
+function refreshTable() {
+    tableComponent.value?.fetchClients();
+}
+
+
 </script>
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbs">
-        <Table :columns="columns" @create="showCreate = true" />
-        <Create :show="showCreate" @update:show="showCreate = $event" />
-        <Update :show="showUpdate" @update:show="showUpdate = $event" :client-data="clientToEdit" />
-        <Info :show="showInfo" @update:show="showInfo = $event" />
-        <Delete :show="showDelete" @update:show="showDelete = $event" :client="clientDelete" />
+        <Table :columns="columns" @create="showCreate = true" ref="tableComponent" />
+        <Create :show="showCreate" @update:show="showCreate = $event" @created="refreshTable" />
+        <Update :show="showUpdate" @update:show="showUpdate = $event" :client-data="clientToEdit"
+            @updated="refreshTable" />
+        <Info :show="showInfo" @update:show="showInfo = $event" :client="clientToEdit" />
+        <Delete :show="showDelete" @update:show="showDelete = $event" :client="clientDelete" @deleted="refreshTable" />
     </AppLayout>
 </template>

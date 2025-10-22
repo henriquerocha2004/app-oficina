@@ -1,15 +1,31 @@
 <script setup lang="ts">
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import Form from './Form.vue';
+import { ClientsApi } from '@/api/Clients';
+import { ref } from 'vue';
+import { toast } from 'vue-sonner';
+
 
 export interface CreateClientProps {
     show: boolean;
 }
 const props = defineProps<CreateClientProps>();
+const emit = defineEmits(['created', 'update:show']);
+const formComponent = ref<InstanceType<typeof Form> | null>(null);
 
-function save(formData: any) {
+async function save(formData: any) {
     if (formData.mode !== 'create') return;
-    console.log('Salvar novo cliente', formData.data);
+    const response = await ClientsApi.save(formData.data);
+
+    if (response.status === 'error') {
+        toast.error('Erro ao criar cliente', { position: 'top-right' });
+        return;
+    }
+
+    emit('created');
+    emit('update:show', false);
+    formComponent.value?.clear();
+    toast.success('Cliente criado com sucesso', { position: 'top-right' });
 }
 
 </script>
@@ -20,7 +36,7 @@ function save(formData: any) {
                 <SheetTitle>Novo Cliente</SheetTitle>
             </SheetHeader>
             <div class="p-3">
-                <Form @submitted="save" />
+                <Form @submitted="save" ref="formComponent" />
             </div>
         </SheetContent>
     </Sheet>

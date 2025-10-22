@@ -21,9 +21,7 @@ class DeleteClientUseCase
     public function execute(string $id): void
     {
         $id = Ulid::fromString($id);
-
         $client = $this->repository->findById($id);
-
         if (!$client) {
             throw new NotFoundException('Client not found.');
         }
