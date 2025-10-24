@@ -10,17 +10,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class ClientEloquentRepository extends BaseEloquentRepository implements ClientRepositoryInterface
 {
-    public function getModel(): Model 
-    { 
+    public function getModel(): Model
+    {
         return app(ClientModel::class);
     }
 
-    public function getMapper(): MapperInterface 
-    { 
+    public function getMapper(): MapperInterface
+    {
         return app(ClientEloquentMapper::class);
     }
 
-    public function getColumnsSearchByTerm(): array 
+    public function getColumnsSearchByTerm(): array
     {
         return ['name', 'email', 'document_number'];
     }

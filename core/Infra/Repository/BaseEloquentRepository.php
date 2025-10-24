@@ -15,10 +15,10 @@ abstract class BaseEloquentRepository implements RepositoryInterface
 {
     abstract function getModel(): Model;
     abstract function getMapper(): MapperInterface;
-    
+
     /** @return string[] */
     abstract function getColumnsSearchByTerm(): array;
-    
+
     public function save(Entity $entity): void
     {
         $data = $this->getMapper()->toPersistence($entity);

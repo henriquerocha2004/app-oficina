@@ -126,4 +126,3 @@ final class Client extends Entity
         );
     }
 }
-

@@ -1,0 +1,37 @@
+{
+    "folders": [
+        {
+            "path": "."
+        }
+    ],
+    "settings": {
+        // Configurações específicas do workspace
+        "files.exclude": {
+            "**/vendor": true,
+            "**/node_modules": true,
+            "**/.git": true,
+            "**/.DS_Store": true,
+            "**/storage/framework": true,
+            "**/storage/logs": true
+        },
+        "search.exclude": {
+            "**/vendor": true,
+            "**/node_modules": true,
+            "**/storage": true,
+            "**/bootstrap/cache": true
+        },
+        "emmet.includeLanguages": {
+            "blade": "html"
+        }
+    },
+    "extensions": {
+        "recommendations": [
+            "ms-vscode-remote.remote-containers",
+            "bmewburn.vscode-intelephense-client",
+            "xdebug.php-debug",
+            "shevaua.phpcs",
+            "onecentlin.laravel-blade",
+            "onecentlin.laravel5-snippets"
+        ]
+    }
+}

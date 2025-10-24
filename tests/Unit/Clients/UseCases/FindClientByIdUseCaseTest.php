@@ -9,7 +9,6 @@ use AppOficina\Clients\UseCases\CreateClient\CreateClientUseCase;
 use AppOficina\Clients\UseCases\CreateClient\Input as CreateInput;
 use Tests\Fakes\InMemoryClientRepository;
 use Symfony\Component\Uid\Ulid;
-
 use AppOficina\Clients\Exceptions\ClientNotFoundException;
 
 it('finds a client by id', function () {

@@ -1,0 +1,125 @@
+{
+  "name": "App Oficina - Laravel Dev Container",
+  "dockerComposeFile": ["../docker-compose.yml"],
+  "service": "oficina-app",
+  "workspaceFolder": "/var/www",
+  "shutdownAction": "stopCompose",
+  
+  // Dev Container gerencia usuários automaticamente
+  "remoteUser": "www-data",
+  
+  "customizations": {
+    "vscode": {
+      "settings": {
+        // PHP Settings
+        "php.validate.executablePath": "/usr/local/bin/php",
+        "php.debug.executablePath": "/usr/local/bin/php",
+        
+        // PHP CodeSniffer - Funcionará nativamente no container
+        "phpcs.executablePath": "/var/www/vendor/bin/phpcs",
+        "phpcs.standard": "/var/www/phpcs.xml",
+        "phpcs.autoConfigSearch": false,
+        "phpcs.showSources": true,
+        "phpcs.showWarnings": true,
+        "phpcs.ignorePatterns": [
+          "*/vendor/*",
+          "*/node_modules/*",
+          "*/storage/*",
+          "*/bootstrap/cache/*"
+        ],
+        
+        // PHP Intelephense
+        "intelephense.files.exclude": [
+          "**/.git/**",
+          "**/.svn/**",
+          "**/.hg/**",
+          "**/CVS/**",
+          "**/.DS_Store/**",
+          "**/node_modules/**",
+          "**/bower_components/**",
+          "**/vendor/**/{Tests,tests}/**",
+          "**/.history/**",
+          "**/vendor/composer/**"
+        ],
+        "intelephense.environment.phpVersion": "8.4.0",
+        "intelephense.files.maxSize": 5000000,
+        
+        // Formatting
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "bmewburn.vscode-intelephense-client",
+        "[php]": {
+          "editor.defaultFormatter": "bmewburn.vscode-intelephense-client",
+          "editor.formatOnSave": true
+        },
+        
+        // Files
+        "files.associations": {
+          "*.blade.php": "php"
+        },
+        
+        // Terminal
+        "terminal.integrated.defaultProfile.linux": "bash",
+        
+        // Git
+        "git.openRepositoryInParentFolders": "never"
+      },
+      
+      "extensions": [
+        // PHP Core
+        "bmewburn.vscode-intelephense-client",
+        "xdebug.php-debug",
+        
+        // PHP CodeSniffer - Principal extensão
+        "shevaua.phpcs",
+        
+        // Laravel/Blade
+        "onecentlin.laravel-blade",
+        "onecentlin.laravel5-snippets",
+        
+        // Frontend
+        "vue.vscode-typescript-vue-plugin",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss",
+        
+        // Utilities
+        "formulahendry.code-runner",
+        "christian-kohler.path-intellisense",
+        "formulahendry.auto-rename-tag",
+        
+        // Git & Docker
+        "eamodio.gitlens",
+        "ms-azuretools.vscode-docker"
+      ]
+    }
+  },
+  
+  "forwardPorts": [5173, 4500, 4502, 4503, 9003],
+  "portsAttributes": {
+    "5173": {
+      "label": "Vite Dev Server",
+      "onAutoForward": "notify"
+    },
+    "4500": {
+      "label": "Nginx Web Server", 
+      "onAutoForward": "openBrowser"
+    },
+    "4502": {
+      "label": "Mailpit SMTP",
+      "onAutoForward": "silent"
+    },
+    "4503": {
+      "label": "Mailpit Web UI",
+      "onAutoForward": "notify"
+    },
+    "9003": {
+      "label": "Xdebug",
+      "onAutoForward": "silent"
+    }
+  },
+  
+  "postCreateCommand": ".devcontainer/setup.sh",
+  
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {}
+  }
+}

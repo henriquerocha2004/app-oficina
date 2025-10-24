@@ -2,16 +2,15 @@ services:
   oficina-app:
     build:
       context: .
-      args:
-        USER_ID: ${USER_ID}
-        GROUP_ID: ${GROUP_ID}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"      
     container_name: oficina-app
     ports:
       - "5173:5173"
+      - "9003:9003"
     working_dir: /var/www
     volumes:
       - .:/var/www
-    user: "${USER_ID}:${GROUP_ID}"
     networks:
       - oficina
 

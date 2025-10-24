@@ -23,5 +23,18 @@ yarn-error.log
 /.fleet
 /.idea
 /.nova
-/.vscode
 /.zed
+/.vscode-server
+/.cache
+/.composer
+/.dotnet
+/.local
+/.ssh
+/.gnupg
+/.devcontainer/*
+!/.devcontainer/devcontainer.json
+!/.devcontainer/setup.sh
+.bash_history
+# Commented out to share devcontainer config with team
+# /.vscode
+# /.devcontainer

@@ -20,6 +20,6 @@ class ListClientsUseCase
      */
     public function execute(SearchRequest $searchRequest): SearchResponse
     {
-       return $this->repository->findAll($searchRequest);
+        return $this->repository->findAll($searchRequest);
     }
 }

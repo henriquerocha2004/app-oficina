@@ -24,12 +24,12 @@ use Request;
 class ClientController extends Controller
 {
     public function __construct(
-       private readonly CreateClientUseCase $createClientUseCase,
-       private readonly FindClientByIdUseCase $findClientByIdUseCase,
-       private readonly UpdateClientUseCase $updateClientUseCase,
-       private readonly DeleteClientUseCase $deleteClientUseCase,
-       private readonly ListClientsUseCase $findClientsByFiltersUseCase
-    ){
+        private readonly CreateClientUseCase $createClientUseCase,
+        private readonly FindClientByIdUseCase $findClientByIdUseCase,
+        private readonly UpdateClientUseCase $updateClientUseCase,
+        private readonly DeleteClientUseCase $deleteClientUseCase,
+        private readonly ListClientsUseCase $findClientsByFiltersUseCase
+    ) {
     }
 
     public function index(): InertiaResponse
@@ -56,7 +56,6 @@ class ClientController extends Controller
                 'client_id' => $output->clientId,
             ], Response::HTTP_CREATED);
         } catch (Throwable $throwable) {
-
             Log::error('Error creating client: ' . $throwable->getMessage(), [
                 'exception' => $throwable,
                 'request_data' => $request->all(),

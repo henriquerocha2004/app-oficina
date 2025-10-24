@@ -37,7 +37,7 @@ it('updates client fields and persists changes', function () {
 
     $updated = $client->withName('Bobby')->withEmail('bobby@example.com')->withObservations('Updated');
     $repo->update($updated);
-    
+
      /** @var Client $found */
     $found = $repo->findById($client->id);
     expect($found)->not->toBeNull()
@@ -126,7 +126,7 @@ it('paginates results with edge page/limit values', function () {
 
     $docs = ['42603972065', '67887286077', '15540258002', '64361235000191', '20825707000144'];
     for ($i = 1; $i <= 5; $i++) {
-        $repo->save(Client::create('User' . $i, "user{$i}@example.com", $docs[$i-1]));
+        $repo->save(Client::create('User' . $i, "user{$i}@example.com", $docs[$i - 1]));
     }
 
     // page 2 with limit 2 should return 2 items (3rd and 4th)

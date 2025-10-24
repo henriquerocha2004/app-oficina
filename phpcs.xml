@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<ruleset name="AppOficina Coding Standard">
+    <description>Coding standard for App Oficina project</description>
+    
+    <!-- Use PSR-12 as base standard -->
+    <rule ref="PSR12"/>
+    
+    <!-- Include the whole project -->
+    <file>./app</file>
+    <file>./core</file>
+    <file>./database</file>
+    <file>./tests</file>
+    
+    <!-- Exclude vendor and other auto-generated files -->
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+    <exclude-pattern>*/node_modules/*</exclude-pattern>
+    <exclude-pattern>*/storage/*</exclude-pattern>
+    <exclude-pattern>*/bootstrap/cache/*</exclude-pattern>
+    <exclude-pattern>*/_ide_helper.php</exclude-pattern>
+    
+    <!-- Allow for migrations to have class names that don't follow PSR-1 -->
+    <rule ref="Squiz.Classes.ValidClassName.NotCamelCaps">
+        <exclude-pattern>*/database/migrations/*</exclude-pattern>
+    </rule>
+    
+    <!-- Show progress -->
+    <arg value="p"/>
+    
+    <!-- Show colors -->
+    <arg name="colors"/>
+    
+    <!-- Show sniff codes in all reports -->
+    <arg value="s"/>
+</ruleset>

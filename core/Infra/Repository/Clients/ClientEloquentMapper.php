@@ -11,8 +11,8 @@ use Symfony\Component\Uid\Ulid;
 
 class ClientEloquentMapper implements MapperInterface
 {
-    public function toDomain(object $persistenceModel): Entity 
-    { 
+    public function toDomain(object $persistenceModel): Entity
+    {
         $client = Client::create(
             name: $persistenceModel->name,
             email: $persistenceModel->email,
@@ -78,5 +78,4 @@ class ClientEloquentMapper implements MapperInterface
             'observations' => $domainModel->observations,
         ];
     }
-
 }

@@ -25,7 +25,8 @@
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.6",
         "pestphp/pest": "^4.0",
-        "pestphp/pest-plugin-laravel": "^4.0"
+        "pestphp/pest-plugin-laravel": "^4.0",
+        "squizlabs/php_codesniffer": "*"
     },
     "autoload": {
         "psr-4": {
@@ -68,6 +69,15 @@
         "test": [
             "@php artisan config:clear --ansi",
             "@php artisan test"
+        ],
+        "phpcs": [
+            "@php ./vendor/bin/phpcs --standard=phpcs.xml"
+        ],
+        "phpcbf": [
+            "@php ./vendor/bin/phpcbf --standard=phpcs.xml"
+        ],
+        "phpcs:check": [
+            "@php ./vendor/bin/phpcs --standard=phpcs.xml --report=summary"
         ]
     },
     "extra": {

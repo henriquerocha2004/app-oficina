@@ -23,7 +23,7 @@ class FindClientByIdUseCase
     public function execute(string $id): array
     {
         $client = $this->repository->findById(Ulid::fromString($id));
-        
+
         if (!$client) {
             throw new ClientNotFoundException();
         }

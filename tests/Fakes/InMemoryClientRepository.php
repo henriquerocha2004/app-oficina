@@ -46,7 +46,9 @@ final class InMemoryClientRepository implements ClientRepositoryInterface
         foreach ($request->columnSearch as $field => $value) {
             $items = array_filter($items, function ($c) use ($field, $value) {
                 if (in_array($field, ['street', 'city', 'state', 'zip_code'])) {
-                    if ($c->address === null) return false;
+                    if ($c->address === null) {
+                        return false;
+                    }
                     $prop = $this->addressFieldToProp($field);
                     return (string) $c->address->{$prop} === (string) $value;
                 }
@@ -89,7 +91,9 @@ final class InMemoryClientRepository implements ClientRepositoryInterface
                 $vb = $b->{$field} ?? null;
             }
 
-            if ($va == $vb) return 0;
+            if ($va == $vb) {
+                return 0;
+            }
 
             $cmp = $va < $vb ? -1 : 1;
             return $request->sort === 'asc' ? $cmp : -$cmp;

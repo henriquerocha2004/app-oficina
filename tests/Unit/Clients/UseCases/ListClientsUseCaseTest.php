@@ -32,7 +32,7 @@ it('paginates results correctly', function () {
     // create 5 clients using known-valid documents
     $docs = ['42603972065', '67887286077', '15540258002', '64361235000191', '20825707000144'];
     foreach ($docs as $i => $doc) {
-        $create->execute(new CreateInput('User'.($i+1), "user{$i}@example.com", $doc));
+        $create->execute(new CreateInput('User' . ($i + 1), "user{$i}@example.com", $doc));
     }
 
     $list = new ListClientsUseCase($repo);
