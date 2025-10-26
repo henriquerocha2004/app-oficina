@@ -61,34 +61,47 @@
         "terminal.integrated.defaultProfile.linux": "bash",
         
         // Git
-        "git.openRepositoryInParentFolders": "never"
+        "git.openRepositoryInParentFolders": "never",
+        // Configurações específicas do Pest
+        "pestphp.phpExecutable": "/usr/local/bin/php",
+        "pestphp.pestExecutable": "/var/www/vendor/bin/pest",
+        "pestphp.enableCodeLens": true,
+        "pestphp.enableGutter": true,
+        
+        // Configurações do PHPUnit (fallback)
+        // "phpunit.php": "/usr/local/bin/php",
+        // "phpunit.phpunit": "/var/www/vendor/bin/pest",
+        // "phpunit.command": "/var/www/vendor/bin/pest",
+        // "phpunit.args": [
+        //   "--colors=never",
+        //   "--teamcity"
+        // ],
+        
+        // Path mapping
+        "phpunit.paths": {
+          "/var/www": "/var/www"
+        }
       },
       
       "extensions": [
-        // PHP Core
         "bmewburn.vscode-intelephense-client",
         "xdebug.php-debug",
-        
-        // PHP CodeSniffer - Principal extensão
         "shevaua.phpcs",
-        
-        // Laravel/Blade
         "onecentlin.laravel-blade",
         "onecentlin.laravel5-snippets",
-        
-        // Frontend
         "vue.vscode-typescript-vue-plugin",
         "esbenp.prettier-vscode",
         "bradlc.vscode-tailwindcss",
-        
-        // Utilities
         "formulahendry.code-runner",
         "christian-kohler.path-intellisense",
         "formulahendry.auto-rename-tag",
-        
-        // Git & Docker
         "eamodio.gitlens",
-        "ms-azuretools.vscode-docker"
+        "ms-azuretools.vscode-docker",
+        "Vue.volar",
+        "shashraf.vscode-pestphp",
+        "recca0120.vscode-phpunit",
+        "vitest.explorer",
+        "jaguadoromero.vscode-php-create-class"
       ]
     }
   },

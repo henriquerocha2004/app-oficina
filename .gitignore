@@ -30,10 +30,13 @@ yarn-error.log
 /.dotnet
 /.local
 /.ssh
+/.npm
 /.gnupg
 /.devcontainer/*
 !/.devcontainer/devcontainer.json
 !/.devcontainer/setup.sh
+/.config
+*.sql
 .bash_history
 # Commented out to share devcontainer config with team
 # /.vscode

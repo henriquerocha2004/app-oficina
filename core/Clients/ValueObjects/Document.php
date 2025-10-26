@@ -15,7 +15,8 @@ final class Document
         $this->number = preg_replace('/\D/', '', $number);
     }
 
-    public function validate(): void {
+    public function validate(): void
+    {
         if (strlen($this->number) === 11) {
             if (!$this->isValidCpf()) {
                 throw new InvalidArgumentException('Invalid CPF number.');

@@ -8,7 +8,7 @@ use AppOficina\Clients\UseCases\DeleteClientUseCase;
 use AppOficina\Clients\UseCases\CreateClient\CreateClientUseCase;
 use AppOficina\Clients\UseCases\CreateClient\Input as CreateInput;
 use Tests\Fakes\InMemoryClientRepository;
-use AppOficina\Shared\Exceptions\NotFoundException;
+use AppOficina\Clients\Exceptions\ClientNotFoundException;
 use Symfony\Component\Uid\Ulid;
 
 it('deletes a client by id', function () {
@@ -30,4 +30,4 @@ it('throws when deleting a non existing client', function () {
     $fakeId = (string) Ulid::generate();
 
     $delete->execute($fakeId);
-})->throws(NotFoundException::class);
+})->throws(ClientNotFoundException::class);

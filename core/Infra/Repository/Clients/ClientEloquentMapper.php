@@ -66,7 +66,7 @@ class ClientEloquentMapper implements MapperInterface
         }
 
         return [
-            'id' => $domainModel->id->toString(),
+            'id' => $domainModel->getId()->toString(),
             'name' => $domainModel->name,
             'email' => $domainModel->email,
             'document_number' => (string) $domainModel->document,

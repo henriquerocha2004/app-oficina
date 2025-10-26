@@ -111,6 +111,10 @@ class ClientController extends Controller
             return response()->json([
                 'message' => 'Client updated successfully',
             ], Response::HTTP_OK);
+        } catch (ClientNotFoundException $exception) {
+            return response()->json([
+                'message' => $exception->getMessage(),
+            ], Response::HTTP_NOT_FOUND);
         } catch (Throwable $throwable) {
             Log::error('Error updating client: ' . $throwable->getMessage(), [
                 'exception' => $throwable,
@@ -158,14 +162,14 @@ class ClientController extends Controller
                 limit: (int) $request->validated('limit', 10),
                 sort: $request->validated('sort', 'asc'),
                 sortField: $request->validated('sortField', 'id'),
-                search: $request->validated('search', ''),
+                search: $request->validated('search') ?? '',
                 columnSearch: $request->validated('columnSearch', []),
             );
 
-            $clients = $this->findClientsByFiltersUseCase->execute($filters);
+            $searchResponse = $this->findClientsByFiltersUseCase->execute($filters);
 
             return response()->json([
-                'clients' => $clients,
+                'clients' => $searchResponse,
             ], Response::HTTP_OK);
         } catch (Throwable $throwable) {
             Log::error('Error fetching clients by filters: ' . $throwable->getMessage(), [

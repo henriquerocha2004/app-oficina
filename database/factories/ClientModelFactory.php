@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Symfony\Component\Uid\Ulid;
+use Faker\Factory as FakerFactory;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Client>
@@ -12,7 +13,7 @@ class ClientModelFactory extends Factory
 {
     public function definition(): array
     {
-        $faker = $this->withFaker('pt_BR');
+        $faker = FakerFactory::create('pt_BR');
 
         return [
             'id' => Ulid::generate(),

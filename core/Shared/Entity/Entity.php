@@ -10,6 +10,11 @@ abstract class Entity
 {
     public Ulid $id;
 
+    public function getId(): Ulid
+    {
+        return $this->id;
+    }
+
     public function toArray(): array
     {
         $result = [];

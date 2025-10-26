@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace AppOficina\Clients\UseCases\CreateClient;
 
 use AppOficina\Clients\ValueObjects\Phone;
@@ -19,7 +21,7 @@ class CreateClientUseCase
         $client = $this->repository->findByDocument($data->document);
 
         if ($client !== null) {
-            return new Output(clientId: (string) $client->id);
+            return new Output(clientId: $client->getId()->__toString());
         }
 
         $client = Client::create(
@@ -50,6 +52,6 @@ class CreateClientUseCase
 
         $this->repository->save($client);
 
-        return new Output(clientId: (string) $client->id);
+        return new Output(clientId: $client->getId()->__toString());
     }
 }

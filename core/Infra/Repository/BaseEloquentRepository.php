@@ -13,11 +13,11 @@ use Symfony\Component\Uid\Ulid;
 
 abstract class BaseEloquentRepository implements RepositoryInterface
 {
-    abstract function getModel(): Model;
-    abstract function getMapper(): MapperInterface;
+    abstract protected function getModel(): Model;
+    abstract protected function getMapper(): MapperInterface;
 
     /** @return string[] */
-    abstract function getColumnsSearchByTerm(): array;
+    abstract protected function getColumnsSearchByTerm(): array;
 
     public function save(Entity $entity): void
     {
@@ -62,7 +62,9 @@ abstract class BaseEloquentRepository implements RepositoryInterface
 
         if ($search->columnSearch) {
             foreach ($search->columnSearch as $column) {
-                $query->where($column['field'], '=', $column['value']);
+                if (is_array($column) && isset($column['field']) && isset($column['value'])) {
+                    $query->where($column['field'], '=', $column['value']);
+                }
             }
         }
 
