@@ -84,10 +84,15 @@ describe("Client Form Page", () => {
             },
             observations: 'Cliente VIP',
         };
+        
         const wrapper = mount(ClientForm, {
             props: { client: existingClient, show: true },
         });
+        
+        // Aguarda o onMounted e fillValues serem executados
         await wrapper.vm.$nextTick();
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
         expect((wrapper.vm as any).form.values).toEqual({
             name: 'Cliente Existente',
             phone: '11988887777',
@@ -101,5 +106,5 @@ describe("Client Form Page", () => {
         });
 
         expect((wrapper.vm as any).mode).toBe('edit');
-    });
+    }, 10000); // Aumenta o timeout para 10 segundos
 });

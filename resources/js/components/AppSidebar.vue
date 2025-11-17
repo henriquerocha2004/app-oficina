@@ -5,6 +5,7 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import { index } from '@/routes/clients';
+import { index as indexCar } from '@/routes/vehicles';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
 import { Banknote, BookOpen, Car, ClipboardPaste, Folder, LayoutGrid, Package, User } from 'lucide-vue-next';
@@ -23,7 +24,7 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Veiculos',
-        href: '#',
+        href: indexCar(),
         icon: Car,
     },
     {

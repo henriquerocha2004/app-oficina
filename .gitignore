@@ -38,6 +38,7 @@ yarn-error.log
 /.config
 *.sql
 .bash_history
+/.dbclient
 # Commented out to share devcontainer config with team
 # /.vscode
 # /.devcontainer

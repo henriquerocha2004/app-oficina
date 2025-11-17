@@ -14,7 +14,7 @@ return new class extends Migration
             $table->string('model');
             $table->integer('year');
             $table->string('type');
-            $table->string('licence_plate')->nullable();
+            $table->string('license_plate')->nullable();
             $table->string('vin')->nullable();
             $table->string('transmission')->nullable();
             $table->string('color')->nullable();

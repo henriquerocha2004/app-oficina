@@ -62,7 +62,7 @@ it('filters by column search', function () {
     $repo = new InMemoryClientRepository();
     $create = new CreateClientUseCase($repo);
 
-    $create->execute(new CreateInput('Carlos', 'carlos@example.com', '42603972065'));
+    $create->execute(new CreateInput('Vehiclelos', 'carlos@example.com', '42603972065'));
     $create->execute(new CreateInput('Diego', 'diego@example.com', '64361235000191'));
 
     $list = new ListClientsUseCase($repo);

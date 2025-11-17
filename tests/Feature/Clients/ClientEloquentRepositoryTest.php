@@ -49,7 +49,7 @@ it('updates client fields and persists changes', function () {
 it('deletes client (soft delete) and it is no longer found', function () {
     $repo = app(ClientEloquentRepository::class);
 
-    $client = Client::create('Carol', 'carol@example.com', '15540258002');
+    $client = Client::create('Vehicleol', 'carol@example.com', '15540258002');
     $repo->save($client);
 
     $repo->delete($client->id);

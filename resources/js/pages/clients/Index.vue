@@ -10,6 +10,8 @@ import { ClientInterface } from './types';
 import Update from './Update.vue';
 import Info from './Info.vue';
 import Delete from './Delete.vue';
+import DescriptionPage from '@/pages/Shared/Components/DescriptionPage.vue';
+
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -31,7 +33,6 @@ const clientDelete = ref<ClientInterface | null>(null);
 const tableComponent = ref<InstanceType<typeof Table> | null>(null);
 
 provide('onEditClient', (client: ClientInterface) => {
-    console.log('Editar cliente:', client);
     clientToEdit.value = client;
     showUpdate.value = true;
 });
@@ -54,6 +55,10 @@ function refreshTable() {
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbs">
+        <DescriptionPage 
+            title="Gerenciamento de Clientes"
+            description="Gerencie informações dos clientes e acesse o histórico de serviços"
+        />
         <Table :columns="columns" @create="showCreate = true" ref="tableComponent" />
         <Create :show="showCreate" @update:show="showCreate = $event" @created="refreshTable" />
         <Update :show="showUpdate" @update:show="showUpdate = $event" :client-data="clientToEdit"

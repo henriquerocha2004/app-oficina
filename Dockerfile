@@ -12,6 +12,8 @@ RUN apt-get update && apt-get install -y \
     curl \
     git \
     netcat-openbsd \
+    sqlite3 \
+    libsqlite3-dev \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
 # Instala e configura Xdebug
