@@ -95,11 +95,11 @@ class VehicleFactory extends Factory
             // Mercosul format: ABC1D23
             return sprintf(
                 '%s%s%s%d%s%d%d',
-                $this->faker->randomLetter(),
-                $this->faker->randomLetter(),
-                $this->faker->randomLetter(),
+                strtoupper($this->faker->randomLetter()),
+                strtoupper($this->faker->randomLetter()),
+                strtoupper($this->faker->randomLetter()),
                 $this->faker->numberBetween(0, 9),
-                $this->faker->randomLetter(),
+                strtoupper($this->faker->randomLetter()),
                 $this->faker->numberBetween(0, 9),
                 $this->faker->numberBetween(0, 9)
             );
@@ -107,9 +107,9 @@ class VehicleFactory extends Factory
             // Old format: ABC1234
             return sprintf(
                 '%s%s%s%d%d%d%d',
-                $this->faker->randomLetter(),
-                $this->faker->randomLetter(),
-                $this->faker->randomLetter(),
+                strtoupper($this->faker->randomLetter()),
+                strtoupper($this->faker->randomLetter()),
+                strtoupper($this->faker->randomLetter()),
                 $this->faker->numberBetween(0, 9),
                 $this->faker->numberBetween(0, 9),
                 $this->faker->numberBetween(0, 9),

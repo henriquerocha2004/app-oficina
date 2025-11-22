@@ -32,6 +32,7 @@ class Vehicle extends Model
         'cilinder_capacity',
         'mileage',
         'observations',
+        'fuel',
     ];
 
     public function client(): BelongsTo

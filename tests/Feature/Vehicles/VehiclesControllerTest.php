@@ -100,6 +100,60 @@ class VehiclesControllerTest extends TestCase
             ]);
     }
 
+    public function testShowByIdReturnsVehicleWithClientInfo(): void
+    {
+        $carId = (new Ulid())->toString();
+        Vehicle::create([
+            'id' => $carId,
+            'brand' => 'Toyota',
+            'model' => 'Corolla',
+            'year' => 2020,
+            'license_plate' => 'ABC1234',
+            'vehicle_type' => 'car',
+            'color' => 'Prata',
+            'fuel' => 'gasoline',
+            'transmission' => 'automatic',
+            'mileage' => 45000,
+            'observations' => 'Veículo em excelente estado',
+            'client_id' => $this->clientId,
+        ]);
+
+        $response = $this->get("/vehicles/{$carId}");
+
+        $response->assertStatus(Response::HTTP_OK)
+            ->assertJsonStructure([
+                'vehicle' => [
+                    'id',
+                    'brand',
+                    'model',
+                    'year',
+                    'plate',
+                    'color',
+                    'vehicle_type',
+                    'fuel',
+                    'transmission',
+                    'mileage',
+                    'observations',
+                    'client' => [
+                        'id',
+                        'name',
+                        'email',
+                        'document_number',
+                        'phone',
+                    ],
+                ],
+            ])
+            ->assertJson([
+                'vehicle' => [
+                    'brand' => 'Toyota',
+                    'model' => 'Corolla',
+                    'year' => 2020,
+                    'plate' => 'ABC1234',
+                    'color' => 'Prata',
+                ],
+            ]);
+    }
+
     public function testShowByIdReturnsNotFoundForInvalidId(): void
     {
         $invalidId = (new Ulid())->toString();
@@ -141,6 +195,49 @@ class VehiclesControllerTest extends TestCase
         $this->assertDatabaseHas('vehicles', [
             'id' => $carId,
             'color' => 'Blue',
+        ]);
+    }
+
+    public function testUpdateModifiesVehicleWithTechnicalInfo(): void
+    {
+        $carId = (new Ulid())->toString();
+        Vehicle::create([
+            'id' => $carId,
+            'brand' => 'Honda',
+            'model' => 'Civic',
+            'year' => 2022,
+            'license_plate' => 'HONDA123',
+            'vehicle_type' => 'car',
+            'client_id' => $this->clientId,
+        ]);
+
+        $updateData = [
+            'brand' => 'Honda',
+            'model' => 'Civic',
+            'year' => 2022,
+            'client_id' => $this->clientId,
+            'plate' => 'ABC1D23',
+            'color' => 'Silver',
+            'vehicle_type' => 'car',
+            'cilinder_capacity' => '2000',
+            'vin' => '1HGBH41JXMN109186',
+            'observations' => 'Updated with technical info',
+        ];
+
+        $response = $this->put("/vehicles/{$carId}", $updateData);
+
+        $response->assertStatus(Response::HTTP_OK)
+            ->assertJson([
+                'message' => 'Vehicle updated successfully',
+            ]);
+
+        $this->assertDatabaseHas('vehicles', [
+            'id' => $carId,
+            'license_plate' => 'ABC1D23',
+            'color' => 'Silver',
+            'cilinder_capacity' => '2000',
+            'vin' => '1HGBH41JXMN109186',
+            'observations' => 'Updated with technical info',
         ]);
     }
 
@@ -253,6 +350,24 @@ class VehiclesControllerTest extends TestCase
 
         $vehicles = $response->json('vehicles');
         $this->assertCount(3, $vehicles);
+    }
+
+    public function testFindByClientIdReturnsEmptyWhenNoVehicles(): void
+    {
+        $emptyClientId = (new Ulid())->toString();
+        Client::create([
+            'id' => $emptyClientId,
+            'name' => 'Client Without Vehicles',
+            'email' => 'empty@example.com',
+            'document_number' => '11111111111',
+        ]);
+
+        $response = $this->get("/vehicles/client/{$emptyClientId}");
+
+        $response->assertStatus(Response::HTTP_OK)
+            ->assertJson([
+                'vehicles' => [],
+            ]);
     }
 
     public function testFindByLicencePlateReturnsVehicleSuccessfully(): void

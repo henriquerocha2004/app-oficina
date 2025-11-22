@@ -56,5 +56,13 @@ export const VehiclesApi = {
                 method: vehicles.delete(id).method.toUpperCase(),
                 headers: jsonHeaders()
             }) as Promise<DefaultResponse>;
+    },
+
+    getByClientId(clientId: string) {
+        const route = vehicles.client(clientId);
+        return fetchWithErrorHandling<{ vehicles: VehiclesInterface[] }>(
+            route.url,
+            { method: route.method.toUpperCase() }
+        );
     }
 };

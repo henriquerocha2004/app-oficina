@@ -4,6 +4,7 @@ import { VehiclesApi } from '@/api/Vehicles';
 vi.mock('@/api/Vehicles', () => ({
     VehiclesApi: {
         search: vi.fn(),
+        getByClientId: vi.fn(),
     },
 }));
 
@@ -84,5 +85,42 @@ describe('VehiclesApi', () => {
                 vehicle_type: expect.anything(),
             })
         );
+    });
+
+    it('should call VehiclesApi.getByClientId with client id', async () => {
+        const mockResponse = {
+            vehicles: [
+                {
+                    id: '1',
+                    brand: 'Toyota',
+                    model: 'Corolla',
+                    year: 2020,
+                    plate: 'ABC1234',
+                    vehicle_type: 'car',
+                    client_id: 'client-123',
+                },
+            ],
+        };
+
+        vi.mocked(VehiclesApi.getByClientId).mockResolvedValue(mockResponse as any);
+
+        const result = await VehiclesApi.getByClientId('client-123');
+
+        expect(VehiclesApi.getByClientId).toHaveBeenCalledWith('client-123');
+        expect(result.vehicles).toHaveLength(1);
+        expect(result.vehicles[0].brand).toBe('Toyota');
+    });
+
+    it('should return empty array when client has no vehicles', async () => {
+        const mockResponse = {
+            vehicles: [],
+        };
+
+        vi.mocked(VehiclesApi.getByClientId).mockResolvedValue(mockResponse as any);
+
+        const result = await VehiclesApi.getByClientId('client-456');
+
+        expect(VehiclesApi.getByClientId).toHaveBeenCalledWith('client-456');
+        expect(result.vehicles).toHaveLength(0);
     });
 });

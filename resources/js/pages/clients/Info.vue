@@ -8,8 +8,11 @@ import {
 
 import { Car } from 'lucide-vue-next';
 import { ClientInterface } from './types';
+import { VehiclesInterface } from '@/pages/vehicles/types';
 import formatPhone from '@/utils/formatPhone';
 import formatDocument from '@/utils/formatDocument';
+import { VehiclesApi } from '@/api/Vehicles';
+import { ref, watch } from 'vue';
 
 export interface UpdateClientProps {
     show: boolean;
@@ -17,6 +20,31 @@ export interface UpdateClientProps {
 }
 
 const props = defineProps<UpdateClientProps>();
+const vehicles = ref<VehiclesInterface[]>([]);
+const isLoadingVehicles = ref(false);
+
+async function loadVehicles() {
+    if (!props.client?.id) return;
+
+    isLoadingVehicles.value = true;
+    try {
+        const response = await VehiclesApi.getByClientId(props.client.id);
+        vehicles.value = response.vehicles || [];
+    } catch (error) {
+        console.error('Error loading vehicles:', error);
+        vehicles.value = [];
+    } finally {
+        isLoadingVehicles.value = false;
+    }
+}
+
+watch(() => props.show, (newValue) => {
+    if (newValue && props.client?.id) {
+        loadVehicles();
+    } else {
+        vehicles.value = [];
+    }
+});
 
 </script>
 <template>
@@ -73,18 +101,31 @@ const props = defineProps<UpdateClientProps>();
                     <div class="flex flex-col gap-4 w-1/3">
                         <h2 class="mb-5 text-lg font-semibold border-b-1 border-black dark:border-white">Veículos
                             Cadastrados</h2>
-                        <div class="flex flex-col gap-1 rounded-3xl bg-gray-300 p-5">
-                            <div class="flex flex-row gap-2">
-                                <Car class="h-6 w-6" />
-                                <p class="">Toyota Corolla</p>
-                            </div>
-                            <div class="flex flex-row gap-1">
-                                <p class="font-bold">Placa: </p>
-                                <p class="font-bold">ABS-1234</p>
-                            </div>
-                            <div class="flex flex-row gap-1">
-                                <p class="font-bold">Ano: </p>
-                                <p class="font-bold">2018</p>
+                        <div v-if="isLoadingVehicles" class="text-center text-gray-500">
+                            Carregando veículos...
+                        </div>
+                        <div v-else-if="vehicles.length === 0" class="text-center text-gray-500">
+                            Nenhum veículo cadastrado
+                        </div>
+                        <div v-else class="flex flex-col gap-3 max-h-96 overflow-y-auto">
+                            <div v-for="vehicle in vehicles" :key="vehicle.id"
+                                class="flex flex-col gap-1 rounded-3xl bg-gray-300 dark:bg-gray-700 p-5">
+                                <div class="flex flex-row gap-2">
+                                    <Car class="h-6 w-6" />
+                                    <p class="font-semibold">{{ vehicle.brand }} {{ vehicle.model }}</p>
+                                </div>
+                                <div class="flex flex-row gap-1">
+                                    <p class="font-bold">Placa: </p>
+                                    <p class="font-bold">{{ vehicle.plate }}</p>
+                                </div>
+                                <div class="flex flex-row gap-1">
+                                    <p class="font-bold">Ano: </p>
+                                    <p class="font-bold">{{ vehicle.year }}</p>
+                                </div>
+                                <div v-if="vehicle.color" class="flex flex-row gap-1">
+                                    <p class="font-bold">Cor: </p>
+                                    <p class="font-bold">{{ vehicle.color }}</p>
+                                </div>
                             </div>
                         </div>
                     </div>

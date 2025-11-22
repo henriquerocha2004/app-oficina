@@ -7,6 +7,8 @@ import { VehiclesInterface } from './types';
 import { columns } from './Table/columns';
 import Table from './Table/Index.vue';
 import Create from './Create.vue';
+import Update from './Update.vue';
+import Info from './Info.vue';
 import { Card, CardContent } from '@/components/ui/card';
 import { History, WrenchIcon, CircleAlertIcon, CheckCircle } from 'lucide-vue-next';
 import DescriptionPage from '@/pages/Shared/Components/DescriptionPage.vue';
@@ -27,6 +29,7 @@ const showUpdate = ref<boolean>(false);
 const showInfo = ref<boolean>(false);
 const showDelete = ref<boolean>(false);
 const vehicleToEdit = ref<VehiclesInterface | null>(null);
+const vehicleToView = ref<VehiclesInterface | null>(null);
 const vehicleDelete = ref<VehiclesInterface | null>(null);
 const tableComponent = ref<InstanceType<typeof Table> | null>(null);
 
@@ -35,7 +38,7 @@ provide('onEditVehicle', (vehicle: VehiclesInterface) => {
     showUpdate.value = true;
 });
 provide('onViewVehicle', (vehicle: VehiclesInterface) => {
-    vehicleToEdit.value = vehicle;
+    vehicleToView.value = vehicle;
     showInfo.value = true;
 });
 
@@ -118,6 +121,17 @@ function refreshTable() {
             :show="showCreate" 
             @update:show="showCreate = $event"
             @created="refreshTable"
+        />
+        <Update 
+            :show="showUpdate" 
+            @update:show="showUpdate = $event" 
+            :vehicle-data="vehicleToEdit"
+            @updated="refreshTable" 
+        />
+        <Info 
+            :show="showInfo" 
+            @update:show="showInfo = $event" 
+            :vehicle="vehicleToView"
         />
     </AppLayout>
 </template>    

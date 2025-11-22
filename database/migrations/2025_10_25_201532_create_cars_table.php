@@ -22,6 +22,7 @@ return new class extends Migration
             $table->integer('mileage')->nullable();
             $table->text('observations')->nullable();
             $table->ulid('client_id');
+            $table->string('fuel')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
