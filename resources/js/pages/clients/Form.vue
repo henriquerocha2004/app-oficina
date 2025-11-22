@@ -61,14 +61,12 @@ function normalizeFormData(data: any): ClientInterface {
     return {
         name: data.name,
         phone: data.phone,
-        document: data.document,
+        document_number: data.document,
         email: data.email,
-        address: {
-            street: data.address || '',
-            city: data.city || '',
-            state: data.state || '',
-            zipCode: data.zipcode || '',
-        },
+        street: data.address || '',
+        city: data.city || '',
+        state: data.state || '',
+        zip_code: data.zipcode || '',
         observations: data.observations || '',
     };
 }
@@ -77,13 +75,13 @@ function fillValues() {
     isProgramaticZipcodeChange.value = true;
     form.setValues({
         name: props.client?.name || '',
-        phone: props.client?.phone.number || '',
-        document: props.client?.document || '',
+        phone: props.client?.phone || '',
+        document: props.client?.document_number || '',
         email: props.client?.email || '',
-        address: props.client?.address.street || '',
-        city: props.client?.address.city || '',
-        state: props.client?.address.state || '',
-        zipcode: props.client?.address.zipCode || '',
+        address: props.client?.street || '',
+        city: props.client?.city || '',
+        state: props.client?.state || '',
+        zipcode: props.client?.zip_code || '',
         observations: props.client?.observations || '',
     });
 

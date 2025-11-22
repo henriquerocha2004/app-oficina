@@ -36,11 +36,11 @@ const props = defineProps<UpdateClientProps>();
                         </div>
                         <div class="flex flex-col gap-1">
                             <p class="text-gray-400 font-bold">Telefone</p>
-                            <p class="font-bold">{{ formatPhone(props.client?.phone.number ?? '') }}</p>
+                            <p class="font-bold">{{ formatPhone(props.client?.phone ?? '') }}</p>
                         </div>
                         <div class="flex flex-col gap-1">
                             <p class="text-gray-400 font-bold">CPF/CNPJ</p>
-                            <p class="font-bold">{{ formatDocument(props.client?.document ?? '') }}</p>
+                            <p class="font-bold">{{ formatDocument(props.client?.document_number ?? '') }}</p>
                         </div>
                         <div class="flex flex-col gap-1">
                             <p class="text-gray-400 font-bold">Email</p>
@@ -51,23 +51,23 @@ const props = defineProps<UpdateClientProps>();
                         <h2 class="mb-5 text-lg font-semibold border-b-1 border-black dark:border-white">Endereço</h2>
                         <div class="flex flex-col gap-1">
                             <p class="text-gray-400 font-bold">Rua</p>
-                            <p class="font-bold">{{ props.client?.address.street }}</p>
+                            <p class="font-bold">{{ props.client?.street }}</p>
                         </div>
                         <div class="flex flex-col gap-1">
                             <p class="text-gray-400 font-bold">Cidade</p>
-                            <p class="font-bold">{{ props.client?.address.city }}</p>
+                            <p class="font-bold">{{ props.client?.city }}</p>
                         </div>
                         <div class="flex flex-col gap-1">
                             <p class="text-gray-400 font-bold">Estado</p>
-                            <p class="font-bold">{{ props.client?.address.state }}</p>
+                            <p class="font-bold">{{ props.client?.state }}</p>
                         </div>
                         <div class="flex flex-col gap-1">
                             <p class="text-gray-400 font-bold">CEP</p>
-                            <p class="font-bold">{{ props.client?.address.zipCode }}</p>
+                            <p class="font-bold">{{ props.client?.zip_code }}</p>
                         </div>
                         <div class="flex flex-col gap-1">
                             <p class="text-gray-400 font-bold">Observações</p>
-                            <p class="font-bold">{{ props.client?.observations }}</p>
+                            <p class="font-bold">-</p>
                         </div>
                     </div>
                     <div class="flex flex-col gap-4 w-1/3">

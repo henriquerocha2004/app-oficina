@@ -106,7 +106,7 @@ watch(open, (isOpen) => {
                     <!-- Mensagem quando precisa de mais caracteres E não há clientes -->
                     <CommandEmpty
                         v-else-if="searchQuery.length > 0 && searchQuery.length < minSearchLength && filteredClients.length === 0">
-                        Digite pelo menos {{ minSearchLength }} caracteres para buscar
+                        Digite o nome do cliente
                     </CommandEmpty>
 
                     <!-- Mensagem quando não há resultados após busca válida -->
@@ -137,8 +137,8 @@ watch(open, (isOpen) => {
                             )" />
                             <div class="flex flex-col">
                                 <span>{{ client.name }}</span>
-                                <span v-if="client.document" class="text-sm text-muted-foreground">{{ client.document
-                                    }}</span>
+                                <span v-if="client.document_number" class="text-sm text-muted-foreground">{{
+                                    client.document_number }}</span>
                             </div>
                         </div>
                     </div>

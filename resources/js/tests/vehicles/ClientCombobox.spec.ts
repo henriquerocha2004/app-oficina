@@ -43,9 +43,9 @@ vi.mock('@/components/ui/command', () => ({
 }))
 
 const mockClients = [
-  { id: '1', name: 'João Silva', document: '123.456.789-00' },
-  { id: '2', name: 'Maria Santos', document: '987.654.321-00' },
-  { id: '3', name: 'Pedro Oliveira', document: '111.222.333-44' }
+  { id: '1', name: 'João Silva', document_number: '123.456.789-00' },
+  { id: '2', name: 'Maria Santos', document_number: '987.654.321-00' },
+  { id: '3', name: 'Pedro Oliveira', document_number: '111.222.333-44' }
 ]
 
 describe('ClientCombobox - Testes Completos', () => {

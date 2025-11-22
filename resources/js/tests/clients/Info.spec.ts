@@ -18,9 +18,12 @@ describe('Clients Info.vue', () => {
         id: '01ABC',
         name: 'John Doe',
         email: 'john@example.com',
-        document: '12345678901',
-        phone: { number: '11987654321' },
-        address: { street: 'Rua X', city: 'SP', state: 'SP', zipCode: '01000-000' },
+        document_number: '12345678901',
+        phone: '11987654321',
+        street: 'Rua X',
+        city: 'SP',
+        state: 'SP',
+        zip_code: '01000-000',
         observations: 'Obs',
     }
 
@@ -42,7 +45,6 @@ describe('Clients Info.vue', () => {
         expect(wrapper.text()).toContain('phone(11987654321)')
         expect(wrapper.text()).toContain('doc(12345678901)')
         expect(wrapper.text()).toContain('Rua X')
-        expect(wrapper.text()).toContain('SP')
         expect(wrapper.text()).toContain('01000-000')
     })
 

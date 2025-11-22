@@ -2,25 +2,17 @@ export interface ClientInterface {
     id?: string;
     name: string;
     email: string;
-    document: string;
-    phone: Phone;
-    address: Address;
-    observations: string;
-}
-
-export interface Address {
-    street: string;
-    city: string;
-    state: string;
-    zipCode: string | undefined;
-}
-
-export interface Phone {
-    number: string;
+    document_number: string;
+    phone: string;
+    street?: string;
+    city?: string;
+    state?: string;
+    zip_code?: string;
+    observations?: string;
 }
 
 export interface ClientsResult {
-    totalItems: number;
+    total_items: number;
     items: ClientInterface[];
 }
 

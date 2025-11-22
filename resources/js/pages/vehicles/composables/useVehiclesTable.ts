@@ -12,21 +12,28 @@ export function useVehiclesTable() {
     const currentPage = ref(1);
     const pageSize = ref(10);
     const searchTerm = ref('');
+    const vehicleType = ref<string>('');
     const sorting = ref<SortingState>([]);
 
     const fetchCars = async () => {
         loading.value = true;
         try {
             const params: SearchParams = {
-                limit: pageSize.value,
+                per_page: pageSize.value,
                 page: currentPage.value,
                 search: searchTerm.value,
-                sort: sorting.value[0]?.desc ? 'desc' : 'asc',
-                sortField: sorting.value[0]?.id || 'id',
+                sort_direction: sorting.value[0]?.desc ? 'desc' : 'asc',
+                sort_by: sorting.value[0]?.id || 'id',
             };
+
+            // Adicionar filtro de tipo de veículo se selecionado
+            if (vehicleType.value) {
+                params.vehicle_type = vehicleType.value;
+            }
+
             const response: VehicleFilterSearchResponse = await VehiclesApi.search(params);
             vehiclesData.value = response.vehicles.items;
-            totalItems.value = response.vehicles.totalItems;
+            totalItems.value = response.vehicles.total_items;
         } finally {
             loading.value = false;
         }
@@ -37,6 +44,12 @@ export function useVehiclesTable() {
         currentPage.value = 1;
         if (searchDebounce) clearTimeout(searchDebounce);
         searchDebounce = setTimeout(fetchCars, 400);
+    });
+
+    // Watch para filtro de tipo de veículo
+    watch(vehicleType, () => {
+        currentPage.value = 1;
+        fetchCars();
     });
 
     const onSortingChange = (next: SortingState) => {
@@ -62,7 +75,7 @@ export function useVehiclesTable() {
 
     return {
         vehiclesData, totalItems, loading,
-        currentPage, pageSize, searchTerm, sorting,
+        currentPage, pageSize, searchTerm, vehicleType, sorting,
         fetchCars, onSortingChange, goToNextPage, goToPreviousPage,
     };
 }

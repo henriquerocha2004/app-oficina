@@ -47,18 +47,18 @@ const transmissionTypes: Array<{ value: TransmissionType; label: string }> = [
 const currentYear = new Date().getFullYear();
 
 const schema = toTypedSchema(z.object({
-    clientId: z.string({ message: 'Selecione o cliente' }).min(1, { message: 'Cliente é obrigatório' }),
+    client_id: z.string({ message: 'Selecione o cliente' }).min(1, { message: 'Cliente é obrigatório' }),
     brand: z.string({ message: 'Informe a marca' }).min(2, { message: 'Marca deve ter pelo menos 2 caracteres' }),
     model: z.string({ message: 'Informe o modelo' }).min(2, { message: 'Modelo deve ter pelo menos 2 caracteres' }),
     year: z.number({ message: 'Informe o ano' })
         .min(1900, { message: 'Ano deve ser maior que 1900' })
         .max(currentYear + 1, { message: `Ano deve ser menor ou igual a ${currentYear + 1}` }),
-    licensePlate: z.string({ message: 'Informe a placa' })
+    plate: z.string({ message: 'Informe a placa' })
         .min(7, { message: 'Placa deve ter 7 caracteres' })
         .max(8, { message: 'Placa deve ter no máximo 8 caracteres' })
         .regex(/^[A-Z]{3}[0-9][A-Z0-9][0-9]{2}$/, { message: 'Formato de placa inválido (ABC1234 ou ABC1D23)' }),
     color: z.string().optional().or(z.literal('')),
-    type: z.enum(['car', 'motorcycle'], { message: 'Selecione o tipo do veículo' }),
+    type: z.enum(['car', 'motorcycle'], { message: 'Selecione o tipo do veículo' }).default('car'),
 
     displacement: z.string().optional().or(z.literal('')),
     fuel: z.string().optional().or(z.literal('')),
@@ -71,6 +71,9 @@ const schema = toTypedSchema(z.object({
 
 const form = useForm({
     validationSchema: schema,
+    initialValues: {
+        type: 'car',
+    },
 });
 
 const onSubmit = form.handleSubmit((values) => {
@@ -86,18 +89,18 @@ onMounted(async () => {
 
 function normalizeFormData(data: any): VehiclesInterface {
     return {
-        clientId: data.clientId,
+        client_id: data.client_id,
         brand: data.brand,
         model: data.model,
         year: data.year,
-        licensePlate: data.licensePlate.toUpperCase(),
+        plate: data.plate?.toUpperCase() || '',
         color: data.color || '',
-        typeVehicle: data.type,
-        displacement: data.displacement || undefined,
+        vehicle_type: data.type,
+        cilinder_capacity: data.displacement || '',
         fuel: data.fuel || undefined,
         transmission: data.transmission || undefined,
-        mileage: data.mileage || undefined,
-        chassis: data.chassis || undefined,
+        mileage: data.mileage ? Number(data.mileage) : undefined,
+        vin: data.chassis || '',
         observations: data.observations || '',
     };
 }
@@ -105,28 +108,28 @@ function normalizeFormData(data: any): VehiclesInterface {
 async function fillValues() {
     if (!props.vehicle) return;
 
-    if (props.vehicle.clientId) {
+    if (props.vehicle.client_id) {
         const clientOption = {
-            id: props.vehicle.clientId,
-            name: props.vehicle.clientName || props.vehicle.client || 'Cliente não informado',
-            document: '',
+            id: props.vehicle.client_id,
+            name: props.vehicle.client?.name || 'Cliente não informado',
+            document_number: props.vehicle.client?.document_number || '',
         };
         setClient(clientOption);
     }
 
     form.setValues({
-        clientId: props.vehicle.clientId || '',
+        client_id: props.vehicle.client_id || '',
         brand: props.vehicle.brand || '',
         model: props.vehicle.model || '',
-        year: props.vehicle.year || currentYear,
-        licensePlate: props.vehicle.licensePlate || '',
+        year: props.vehicle.year || new Date().getFullYear(),
+        plate: props.vehicle.plate || '',
         color: props.vehicle.color || '',
-        type: props.vehicle.typeVehicle || 'car',
-        displacement: props.vehicle.displacement || '',
+        type: props.vehicle.vehicle_type || 'car',
+        displacement: props.vehicle.cilinder_capacity || '',
         fuel: props.vehicle.fuel || '',
         transmission: props.vehicle.transmission || '',
         mileage: props.vehicle.mileage || '',
-        chassis: props.vehicle.chassis || '',
+        chassis: props.vehicle.vin || '',
         observations: props.vehicle.observations || '',
     });
 }
@@ -164,7 +167,7 @@ defineExpose({
                 <div class="space-y-4">
                     <h3 class="text-lg font-medium">Informações Básicas</h3>
 
-                    <FormField v-slot="{ componentField }" name="clientId">
+                    <FormField v-slot="{ componentField }" name="client_id">
                         <FormItem>
                             <FormLabel>Cliente *</FormLabel>
                             <FormControl>
@@ -213,7 +216,7 @@ defineExpose({
                             </FormItem>
                         </FormField>
 
-                        <FormField v-slot="{ componentField }" name="licensePlate">
+                        <FormField v-slot="{ componentField }" name="plate">
                             <FormItem>
                                 <FormLabel>Placa *</FormLabel>
                                 <FormControl>

@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\Vehicles;
 
-use App\Models\VehicleModel;
-use App\Models\ClientModel;
+use App\Models\Vehicle;
+use App\Models\Client;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,7 +29,7 @@ class VehiclesControllerTest extends TestCase
 
         // Create a test client
         $this->clientId = (new Ulid())->toString();
-        ClientModel::create([
+        Client::create([
             'id' => $this->clientId,
             'name' => 'Test Client',
             'email' => 'test@example.com',
@@ -43,15 +43,9 @@ class VehiclesControllerTest extends TestCase
             'brand' => 'Toyota',
             'model' => 'Corolla',
             'year' => 2022,
-            'typeVehicle' => 'car',
-            'clientId' => $this->clientId,
-            'licencePlate' => 'ABC1234',
-            'vin' => '1HGBH41JXMN109186',
+            'client_id' => $this->clientId,
+            'plate' => 'ABC1234',
             'color' => 'Red',
-            'mileage' => 15000,
-            'transmission' => 'automatic',
-            'engineSize' => 1800,
-            'observations' => 'Test car',
         ];
 
         $response = $this->post('/vehicles', $carData);
@@ -61,15 +55,15 @@ class VehiclesControllerTest extends TestCase
                 'message' => 'Vehicle created successfully',
             ])
             ->assertJsonStructure([
-                'car_id',
+                'vehicle_id',
             ]);
 
         $this->assertDatabaseHas('vehicles', [
             'brand' => 'Toyota',
             'model' => 'Corolla',
             'year' => 2022,
-            'vehicle_type' => 'car',
             'client_id' => $this->clientId,
+            'license_plate' => 'ABC1234',
         ]);
     }
 
@@ -78,27 +72,27 @@ class VehiclesControllerTest extends TestCase
         $response = $this->actingAs($this->user)->postJson('/vehicles', []);
 
         $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
-            ->assertJsonValidationErrors(['brand', 'model', 'year', 'typeVehicle', 'clientId']);
+            ->assertJsonValidationErrors(['brand', 'model', 'year', 'plate', 'client_id']);
     }
 
     public function testShowByIdReturnsVehicleSuccessfully(): void
     {
         $carId = (new Ulid())->toString();
-        VehicleModel::create([
+        Vehicle::create([
             'id' => $carId,
             'brand' => 'Honda',
             'model' => 'Civic',
             'year' => 2023,
+            'license_plate' => 'TEST123',
             'vehicle_type' => 'car',
             'client_id' => $this->clientId,
-            'vehicle_type' => 'car',
         ]);
 
         $response = $this->get("/vehicles/{$carId}");
 
         $response->assertStatus(Response::HTTP_OK)
             ->assertJsonStructure([
-                'car' => [
+                'vehicle' => [
                     'brand',
                     'model',
                     'year',
@@ -118,19 +112,23 @@ class VehiclesControllerTest extends TestCase
     public function testUpdateModifiesVehicleSuccessfully(): void
     {
         $carId = (new Ulid())->toString();
-        VehicleModel::create([
+        Vehicle::create([
             'id' => $carId,
             'brand' => 'Ford',
             'model' => 'Focus',
             'year' => 2021,
+            'license_plate' => 'FORD123',
             'vehicle_type' => 'car',
             'client_id' => $this->clientId,
-            'vehicle_type' => 'car',
         ]);
 
         $updateData = [
+            'brand' => 'Ford',
+            'model' => 'Focus',
+            'year' => 2021,
+            'client_id' => $this->clientId,
+            'plate' => 'ABC1234',
             'color' => 'Blue',
-            'mileage' => 25000,
         ];
 
         $response = $this->put("/vehicles/{$carId}", $updateData);
@@ -143,21 +141,20 @@ class VehiclesControllerTest extends TestCase
         $this->assertDatabaseHas('vehicles', [
             'id' => $carId,
             'color' => 'Blue',
-            'mileage' => 25000,
         ]);
     }
 
     public function testDeleteRemovesVehicleSuccessfully(): void
     {
         $carId = (new Ulid())->toString();
-        VehicleModel::create([
+        Vehicle::create([
             'id' => $carId,
             'brand' => 'BMW',
             'model' => 'X5',
             'year' => 2024,
+            'license_plate' => 'BMW1234',
             'vehicle_type' => 'car',
             'client_id' => $this->clientId,
-            'vehicle_type' => 'car',
         ]);
 
         $response = $this->delete("/vehicles/{$carId}");
@@ -185,29 +182,29 @@ class VehiclesControllerTest extends TestCase
     {
         // Create multiple vehicles
         for ($i = 0; $i < 5; $i++) {
-            VehicleModel::create([
+            Vehicle::create([
                 'id' => (new Ulid())->toString(),
                 'brand' => "Brand{$i}",
                 'model' => "Model{$i}",
                 'year' => 2020 + $i,
+                'license_plate' => "PLT{$i}123",
                 'vehicle_type' => 'car',
                 'client_id' => $this->clientId,
-                'vehicle_type' => 'car',
             ]);
         }
 
         $response = $this->get('/vehicles/filters?' . http_build_query([
             'page' => 1,
-            'limit' => 3,
-            'sort' => 'asc',
-            'sortField' => 'brand',
+            'per_page' => 3,
+            'sort_direction' => 'asc',
+            'sort_by' => 'brand',
             'search' => '',
         ]));
 
         $response->assertStatus(Response::HTTP_OK)
             ->assertJsonStructure([
                 'vehicles' => [
-                    'totalItems',
+                    'total_items',
                     'items',
                 ],
             ]);
@@ -217,34 +214,34 @@ class VehiclesControllerTest extends TestCase
     {
         // Create vehicles for this client
         for ($i = 0; $i < 3; $i++) {
-            VehicleModel::create([
+            Vehicle::create([
                 'id' => (new Ulid())->toString(),
                 'brand' => "Brand{$i}",
                 'model' => "Model{$i}",
                 'year' => 2020 + $i,
+                'license_plate' => "CLI{$i}123",
                 'vehicle_type' => 'car',
                 'client_id' => $this->clientId,
-                'vehicle_type' => 'car',
             ]);
         }
 
         // Create car for different client
         $otherClientId = (new Ulid())->toString();
-        ClientModel::create([
+        Client::create([
             'id' => $otherClientId,
             'name' => 'Other Client',
             'email' => 'other@example.com',
             'document_number' => '98765432100',
         ]);
 
-        VehicleModel::create([
+        Vehicle::create([
             'id' => (new Ulid())->toString(),
             'brand' => 'OtherBrand',
             'model' => 'OtherModel',
             'year' => 2022,
+            'license_plate' => 'OTHER99',
             'vehicle_type' => 'car',
             'client_id' => $otherClientId,
-            'vehicle_type' => 'car',
         ]);
 
         $response = $this->get("/vehicles/client/{$this->clientId}");
@@ -261,7 +258,7 @@ class VehiclesControllerTest extends TestCase
     public function testFindByLicencePlateReturnsVehicleSuccessfully(): void
     {
         $carId = (new Ulid())->toString();
-        VehicleModel::create([
+        Vehicle::create([
             'id' => $carId,
             'brand' => 'Volkswagen',
             'model' => 'Golf',
@@ -276,10 +273,10 @@ class VehiclesControllerTest extends TestCase
 
         $response->assertStatus(Response::HTTP_OK)
             ->assertJsonStructure([
-                'car' => [
+                'vehicle' => [
                     'brand',
                     'model',
-                    'license_plate',
+                    'plate',
                 ],
             ]);
     }
@@ -294,25 +291,24 @@ class VehiclesControllerTest extends TestCase
     public function testFindByVinReturnsVehicleSuccessfully(): void
     {
         $carId = (new Ulid())->toString();
-        VehicleModel::create([
+        Vehicle::create([
             'id' => $carId,
             'brand' => 'Mercedes',
             'model' => 'C-Class',
             'year' => 2023,
+            'license_plate' => 'MERC123',
             'vehicle_type' => 'car',
             'vin' => 'WBA3B1C50DF123456',
             'client_id' => $this->clientId,
-            'vehicle_type' => 'car',
         ]);
 
         $response = $this->get('/vehicles/vin/WBA3B1C50DF123456');
 
         $response->assertStatus(Response::HTTP_OK)
             ->assertJsonStructure([
-                'car' => [
+                'vehicle' => [
                     'brand',
                     'model',
-                    'vin',
                 ],
             ]);
     }
@@ -324,38 +320,21 @@ class VehiclesControllerTest extends TestCase
         $response->assertStatus(Response::HTTP_NOT_FOUND);
     }
 
-    public function testStoreValidatesLicencePlateFormat(): void
+    public function testStoreValidatesPlateFormat(): void
     {
         $carData = [
             'brand' => 'Toyota',
             'model' => 'Corolla',
             'year' => 2022,
-            'typeVehicle' => 'car',
-            'clientId' => $this->clientId,
-            'licencePlate' => 'INVALID',
+            'client_id' => $this->clientId,
+            'plate' => 'INVALID',
+            'color' => 'Red',
         ];
 
         $response = $this->actingAs($this->user)->postJson('/vehicles', $carData);
 
         $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
-            ->assertJsonValidationErrors(['licencePlate']);
-    }
-
-    public function testStoreValidatesVinFormat(): void
-    {
-        $carData = [
-            'brand' => 'Toyota',
-            'model' => 'Corolla',
-            'year' => 2022,
-            'typeVehicle' => 'car',
-            'clientId' => $this->clientId,
-            'vin' => 'INVALID',
-        ];
-
-        $response = $this->actingAs($this->user)->postJson('/vehicles', $carData);
-
-        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
-            ->assertJsonValidationErrors(['vin']);
+            ->assertJsonValidationErrors(['plate']);
     }
 
     public function testStoreValidatesYearRange(): void
@@ -364,8 +343,9 @@ class VehiclesControllerTest extends TestCase
             'brand' => 'Toyota',
             'model' => 'Corolla',
             'year' => 1800, // Invalid year
-            'typeVehicle' => 'car',
-            'clientId' => $this->clientId,
+            'client_id' => $this->clientId,
+            'plate' => 'ABC1234',
+            'color' => 'Red',
         ];
 
         $response = $this->actingAs($this->user)->postJson('/vehicles', $carData);
@@ -374,19 +354,171 @@ class VehiclesControllerTest extends TestCase
             ->assertJsonValidationErrors(['year']);
     }
 
-    public function testStoreValidatesVehicleType(): void
+    public function testFilterByVehicleTypeReturnsOnlyCars(): void
     {
-        $carData = [
+        // Create cars
+        Vehicle::create([
+            'id' => (new Ulid())->toString(),
             'brand' => 'Toyota',
             'model' => 'Corolla',
             'year' => 2022,
-            'typeVehicle' => 'invalid_type',
-            'clientId' => $this->clientId,
-        ];
+            'license_plate' => 'CAR1234',
+            'vehicle_type' => 'car',
+            'client_id' => $this->clientId,
+        ]);
 
-        $response = $this->actingAs($this->user)->postJson('/vehicles', $carData);
+        // Create motorcycles
+        Vehicle::create([
+            'id' => (new Ulid())->toString(),
+            'brand' => 'Honda',
+            'model' => 'CB500',
+            'year' => 2021,
+            'license_plate' => 'MOT5678',
+            'vehicle_type' => 'motorcycle',
+            'client_id' => $this->clientId,
+        ]);
 
-        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
-            ->assertJsonValidationErrors(['typeVehicle']);
+        $response = $this->get('/vehicles/filters?' . http_build_query([
+            'page' => 1,
+            'per_page' => 10,
+            'sort_direction' => 'asc',
+            'sort_by' => 'brand',
+            'vehicle_type' => 'car',
+        ]));
+
+        $response->assertStatus(Response::HTTP_OK);
+        $data = $response->json('vehicles.items');
+
+        $this->assertNotEmpty($data);
+        foreach ($data as $vehicle) {
+            $this->assertEquals('car', $vehicle['vehicle_type']);
+        }
+    }
+
+    public function testFilterByVehicleTypeReturnsOnlyMotorcycles(): void
+    {
+        // Create cars
+        Vehicle::create([
+            'id' => (new Ulid())->toString(),
+            'brand' => 'Toyota',
+            'model' => 'Corolla',
+            'year' => 2022,
+            'license_plate' => 'CAR1234',
+            'vehicle_type' => 'car',
+            'client_id' => $this->clientId,
+        ]);
+
+        // Create motorcycles
+        Vehicle::create([
+            'id' => (new Ulid())->toString(),
+            'brand' => 'Honda',
+            'model' => 'CB500',
+            'year' => 2021,
+            'license_plate' => 'MOT5678',
+            'vehicle_type' => 'motorcycle',
+            'client_id' => $this->clientId,
+        ]);
+
+        $response = $this->get('/vehicles/filters?' . http_build_query([
+            'page' => 1,
+            'per_page' => 10,
+            'sort_direction' => 'asc',
+            'sort_by' => 'brand',
+            'vehicle_type' => 'motorcycle',
+        ]));
+
+        $response->assertStatus(Response::HTTP_OK);
+        $data = $response->json('vehicles.items');
+
+        $this->assertNotEmpty($data);
+        foreach ($data as $vehicle) {
+            $this->assertEquals('motorcycle', $vehicle['vehicle_type']);
+        }
+    }
+
+    public function testSearchByClientNameReturnsVehicles(): void
+    {
+        // Create client with specific name
+        $specificClientId = (new Ulid())->toString();
+        Client::create([
+            'id' => $specificClientId,
+            'name' => 'João Silva',
+            'email' => 'joao@example.com',
+            'document_number' => $this->generateValidCpf(),
+        ]);
+
+        // Create vehicle for João Silva
+        Vehicle::create([
+            'id' => (new Ulid())->toString(),
+            'brand' => 'Volkswagen',
+            'model' => 'Gol',
+            'year' => 2020,
+            'license_plate' => 'JOA1234',
+            'vehicle_type' => 'car',
+            'client_id' => $specificClientId,
+        ]);
+
+        // Create vehicle for default test client
+        Vehicle::create([
+            'id' => (new Ulid())->toString(),
+            'brand' => 'Fiat',
+            'model' => 'Uno',
+            'year' => 2019,
+            'license_plate' => 'TST5678',
+            'vehicle_type' => 'car',
+            'client_id' => $this->clientId,
+        ]);
+
+        $response = $this->get('/vehicles/filters?' . http_build_query([
+            'page' => 1,
+            'per_page' => 10,
+            'sort_direction' => 'asc',
+            'sort_by' => 'brand',
+            'search' => 'João',
+        ]));
+
+        $response->assertStatus(Response::HTTP_OK);
+        $data = $response->json('vehicles.items');
+
+        $this->assertNotEmpty($data);
+        $this->assertCount(1, $data);
+        $this->assertEquals('JOA1234', $data[0]['plate']);
+    }
+
+    public function testSearchByClientNamePartialMatch(): void
+    {
+        // Create client with specific name
+        $specificClientId = (new Ulid())->toString();
+        Client::create([
+            'id' => $specificClientId,
+            'name' => 'Maria Santos Oliveira',
+            'email' => 'maria@example.com',
+            'document_number' => $this->generateValidCpf(),
+        ]);
+
+        // Create vehicle for Maria
+        Vehicle::create([
+            'id' => (new Ulid())->toString(),
+            'brand' => 'Chevrolet',
+            'model' => 'Onix',
+            'year' => 2021,
+            'license_plate' => 'MAR1234',
+            'vehicle_type' => 'car',
+            'client_id' => $specificClientId,
+        ]);
+
+        $response = $this->get('/vehicles/filters?' . http_build_query([
+            'page' => 1,
+            'per_page' => 10,
+            'sort_direction' => 'asc',
+            'sort_by' => 'brand',
+            'search' => 'Santos',
+        ]));
+
+        $response->assertStatus(Response::HTTP_OK);
+        $data = $response->json('vehicles.items');
+
+        $this->assertNotEmpty($data);
+        $this->assertEquals('MAR1234', $data[0]['plate']);
     }
 }

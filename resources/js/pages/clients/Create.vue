@@ -14,6 +14,7 @@ const emit = defineEmits(['created', 'update:show']);
 const formComponent = ref<InstanceType<typeof Form> | null>(null);
 
 async function save(formData: any) {
+    console.log(formData);
     if (formData.mode !== 'create') return;
     const response = await ClientsApi.save(formData.data);
 

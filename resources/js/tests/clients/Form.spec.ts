@@ -52,9 +52,12 @@ describe('Clients Form.vue', () => {
         expect(payload.data).toEqual({
             name: 'João da Silva',
             phone: '11987654321',
-            document: '11144477735',
+            document_number: '11144477735',
             email: 'joao@example.com',
-            address: { street: 'Praça da Sé', city: 'São Paulo', state: '', zipCode: '01001-000' },
+            street: 'Praça da Sé',
+            city: 'São Paulo',
+            state: '',
+            zip_code: '01001-000',
             observations: '',
         })
     })
@@ -66,9 +69,12 @@ describe('Clients Form.vue', () => {
                     id: '01HZK5ABCDEF',
                     name: 'Maria Souza',
                     email: 'maria@example.com',
-                    document: '12345678901',
-                    phone: { number: '11987654321' },
-                    address: { street: 'Rua A', city: 'SP', state: 'SP', zipCode: '02000-000' },
+                    document_number: '12345678901',
+                    phone: '11987654321',
+                    street: 'Rua A',
+                    city: 'SP',
+                    state: 'SP',
+                    zip_code: '02000-000',
                     observations: 'VIP',
                 },
             },
@@ -89,7 +95,7 @@ describe('Clients Form.vue', () => {
         const payload = emitted![0][0]
         expect(payload.mode).toBe('edit')
         expect(payload.data.name).toBe('Maria Souza')
-        expect(payload.data.address.street).toBe('Rua A')
+        expect(payload.data.street).toBe('Rua A')
     })
 
     it('fetches address by zipcode (ViaCEP) and updates address/city/state', async () => {
@@ -123,8 +129,8 @@ describe('Clients Form.vue', () => {
                     id: '01HZK5ABCDEF',
                     name: 'Alguém',
                     email: 'a@a.com',
-                    document: '12345678901',
-                    phone: { number: '11999999999' },
+                    document_number: '12345678901',
+                    phone: '11999999999',
                     address: { street: 'R1', city: 'C1', state: 'SP', zipCode: '02000-000' },
                     observations: 'O1',
                 },

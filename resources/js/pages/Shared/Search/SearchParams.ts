@@ -1,15 +1,11 @@
 type SortOrder = 'asc' | 'desc';
 
-export interface ColumnSearch {
-    field: string;
-    value: string;
-}
-
 export interface SearchParams {
     page: number;
-    limit: number;
-    sort: SortOrder;
-    sortField: string;
+    per_page: number;
+    sort_direction: SortOrder;
+    sort_by: string;
     search?: string | null;
-    columnSearch?: ColumnSearch[] | null;
+    vehicle_type?: string;
+    [key: string]: string | number | null | undefined;
 }

@@ -18,15 +18,15 @@ export function useClientsTable() {
         loading.value = true;
         try {
             const params: SearchParams = {
-                limit: pageSize.value,
+                per_page: pageSize.value,
                 page: currentPage.value,
                 search: searchTerm.value,
-                sort: sorting.value[0]?.desc ? 'desc' : 'asc',
-                sortField: sorting.value[0]?.id || 'id',
+                sort_direction: sorting.value[0]?.desc ? 'desc' : 'asc',
+                sort_by: sorting.value[0]?.id || 'id',
             };
             const response: ClientFilterSearchResponse = await ClientsApi.search(params);
             clientsData.value = response.clients.items;
-            totalItems.value = response.clients.totalItems;
+            totalItems.value = response.clients.total_items;
         } finally {
             loading.value = false;
         }

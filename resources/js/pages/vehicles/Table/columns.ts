@@ -28,7 +28,7 @@ export const columns: ColumnDef<VehiclesInterface>[] = [
         }
     },
     {
-        accessorKey: 'licensePlate',
+        accessorKey: 'plate',
         header: 'Placa',
         cell: ({ row }: { row: { original: VehiclesInterface } }) => {
             return h(PlateCell, { vehicle: row.original });
@@ -45,12 +45,7 @@ export const columns: ColumnDef<VehiclesInterface>[] = [
         accessorKey: 'last_service_date',
         header: 'Último Serviço',
         cell: ({ row }: { row: { original: VehiclesInterface } }) => {
-            if (!row.original.last_service_date) {
-                return 'Nunca';
-            }
-            
-            const date = new Date(row.original.last_service_date || '');
-            return date.toLocaleDateString();
+           return '--'
         },
     },
     {

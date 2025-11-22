@@ -16,11 +16,10 @@ export const ClientsApi = {
         const client = clients.filters({
             query: {
                 page: params.page,
-                limit: params.limit,
+                per_page: params.per_page,
                 search: params.search || undefined,
-                sort: params.sort,
-                sortField: params.sortField,
-                columnSearch: params.columnSearch ? JSON.stringify(params.columnSearch) : undefined,
+                sort_direction: params.sort_direction,
+                sort_by: params.sort_by,
             }
         })
 

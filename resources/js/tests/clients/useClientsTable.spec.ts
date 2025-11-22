@@ -29,9 +29,9 @@ describe('useClientsTable composable', () => {
             ; (ClientsApi.search as any).mockReset()
             ; (ClientsApi.search as any).mockResolvedValue({
                 clients: {
-                    totalItems: 2, items: [
-                        { id: '01A', name: 'A', email: 'a@a.com', document: '123', phone: { number: '11' }, address: { street: '', city: '', state: '', zipCode: '' }, observations: '' },
-                        { id: '01B', name: 'B', email: 'b@b.com', document: '456', phone: { number: '22' }, address: { street: '', city: '', state: '', zipCode: '' }, observations: '' },
+                    total_items: 2, items: [
+                        { id: '01A', name: 'A', email: 'a@a.com', document_number: '123', phone: '11', street: '', city: '', state: '', zip_code: '', observations: '' },
+                        { id: '01B', name: 'B', email: 'b@b.com', document_number: '456', phone: '22', street: '', city: '', state: '', zip_code: '', observations: '' },
                     ]
                 }
             })

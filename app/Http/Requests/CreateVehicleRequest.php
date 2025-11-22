@@ -16,17 +16,17 @@ class CreateVehicleRequest extends FormRequest
         return [
             'brand' => ['required', 'string', 'min:3', 'max:255'],
             'model' => ['required', 'string', 'min:1', 'max:255'],
-            'year' => ['required', 'integer', 'min:1886', 'max:' . date('Y')],
-            'typeVehicle' => ['required', 'string', 'in:car,motorcycle'],
-            'clientId' => ['required', 'string', 'max:26'],
-            'licensePlate' => ['required', 'string'],
-            'vin' => ['nullable', 'string', 'regex:/^[A-HJ-NPR-Z0-9]{17}$/'],
+            'year' => ['required', 'integer', 'min:1886', 'max:' . date('Y') + 1],
             'color' => ['nullable', 'string', 'max:50'],
-            'mileage' => ['nullable', 'integer', 'min:0'],
+            'client_id' => ['required', 'string', 'max:26'],
+            'plate' => ['required', 'string', 'regex:/^[A-Z]{3}-?[0-9]{1}[A-Z0-9][0-9]{2}$/'],
+            'vehicle_type' => ['nullable', 'string', 'in:car,motorcycle'],
+            'cilinder_capacity' => ['nullable', 'string', 'max:50'],
+            'fuel' => ['nullable', 'string', 'in:alcohol,gasoline,diesel'],
             'transmission' => ['nullable', 'string', 'in:manual,automatic'],
-            'engineSize' => ['nullable', 'numeric', 'min:0'],
-            'fuelType' => ['nullable', 'string', 'max:50'],
-            'observations' => ['nullable', 'string'],
+            'mileage' => ['nullable', 'integer', 'min:0'],
+            'vin' => ['nullable', 'string', 'max:17'],
+            'observations' => ['nullable', 'string', 'max:1000'],
         ];
     }
 
@@ -39,12 +39,10 @@ class CreateVehicleRequest extends FormRequest
             'year.required' => 'The year field is required.',
             'year.min' => 'The year must be at least 1886.',
             'year.max' => 'The year cannot be in the future.',
-            'typeVehicle.required' => 'The vehicle type field is required.',
-            'typeVehicle.in' => 'The vehicle type must be one of: car, motorcycle, truck, van, bus.',
-            'clientId.required' => 'The client ID field is required.',
-            'licencePlate.regex' => 'The licence plate format is invalid.',
-            'vin.regex' => 'The VIN format is invalid.',
-            'transmission.in' => 'The transmission must be manual or automatic.',
+            'color.required' => 'The color field is required.',
+            'client_id.required' => 'The client ID field is required.',
+            'plate.required' => 'The plate field is required.',
+            'plate.regex' => 'The plate format is invalid.',
         ];
     }
 }

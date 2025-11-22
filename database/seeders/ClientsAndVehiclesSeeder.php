@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\ClientModel;
-use App\Models\VehicleModel;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Client;
+use App\Models\Vehicle;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -17,50 +16,35 @@ class ClientsAndVehiclesSeeder extends Seeder
     {
         $this->command->info('Starting to seed clients and cars...');
         // Verificar se já existem dados
-        if (ClientModel::count() > 0) {
+        if (Client::count() > 0) {
             $this->command->warn('⚠️  Database already contains clients. Truncating tables...');
             DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-            VehicleModel::truncate();
-            ClientModel::truncate();
+            Vehicle::truncate();
+            Client::truncate();
             DB::statement('SET FOREIGN_KEY_CHECKS=1;');
         }
 
         DB::transaction(function () {
             // Criar 100 clientes
-            $clients = ClientModel::factory()->count(100)->create();
+            $clients = Client::factory()->count(100)->create();
 
             $this->command->info("Created {$clients->count()} clients");
 
             // Para cada cliente, criar um carro
-            $clients->each(function (ClientModel $client, $index) {
+            $clients->each(function (Client $client, $index) {
                 // Varia os tipos de carros para ter diversidade
-                $carTypes = ['sedan', 'hatchback', 'suv', 'coupe', 'convertible', 'wagon', 'van', 'pickup'];
+                $carTypes = ['motorcycle', 'motorcycle'];
 
                 // Criar carro com características variadas
-                $carFactory = VehicleModel::factory()->forClient($client->id);
+                $carFactory = Vehicle::factory()->forClient($client->id);
 
                 // Adicionar variação baseada no índice para ter diversidade
                 switch ($index % 8) {
                     case 0:
-                        $car = $carFactory->recent()->automatic()->ofType('sedan')->create();
+                        $car = $carFactory->recent()->automatic()->ofType('car')->create();
                         break;
                     case 1:
-                        $car = $carFactory->vintage()->manual()->ofType('hatchback')->create();
-                        break;
-                    case 2:
-                        $car = $carFactory->complete()->ofType('suv')->withMercosulPlate()->create();
-                        break;
-                    case 3:
-                        $car = $carFactory->minimal()->ofType('pickup')->withOldFormatPlate()->create();
-                        break;
-                    case 4:
-                        $car = $carFactory->brandModel('Toyota', 'Corolla')->recent()->automatic()->create();
-                        break;
-                    case 5:
-                        $car = $carFactory->brandModel('BMW', 'Serie 3')->ofType('coupe')->automatic()->create();
-                        break;
-                    case 6:
-                        $car = $carFactory->vintage()->manual()->ofType('wagon')->create();
+                        $car = $carFactory->vintage()->manual()->ofType('motorcycle')->create();
                         break;
                     default:
                         $car = $carFactory->ofType($carTypes[array_rand($carTypes)])->create();
@@ -82,15 +66,15 @@ class ClientsAndVehiclesSeeder extends Seeder
      */
     private function displaySummary(): void
     {
-        $clientsCount = ClientModel::count();
-        $carsCount = VehicleModel::count();
+        $clientsCount = Client::count();
+        $carsCount = Vehicle::count();
 
-        $carsByType = VehicleModel::select('vehicle_type', DB::raw('count(*) as total'))
+        $carsByType = Vehicle::select('vehicle_type', DB::raw('count(*) as total'))
             ->groupBy('vehicle_type')
             ->pluck('total', 'vehicle_type')
             ->toArray();
 
-        $carsByTransmission = VehicleModel::select('transmission', DB::raw('count(*) as total'))
+        $carsByTransmission = Vehicle::select('transmission', DB::raw('count(*) as total'))
             ->whereNotNull('transmission')
             ->groupBy('transmission')
             ->pluck('total', 'transmission')
@@ -110,8 +94,8 @@ class ClientsAndVehiclesSeeder extends Seeder
             $this->command->info("   {$transmission}: {$count}");
         }
 
-        $carsWithPlates = VehicleModel::whereNotNull('license_plate')->count();
-        $carsWithVin = VehicleModel::whereNotNull('vin')->count();
+        $carsWithPlates = Vehicle::whereNotNull('license_plate')->count();
+        $carsWithVin = Vehicle::whereNotNull('vin')->count();
 
         $this->command->info('📋 Additional Stats:');
         $this->command->info("   Vehicles with License Plates: {$carsWithPlates}");

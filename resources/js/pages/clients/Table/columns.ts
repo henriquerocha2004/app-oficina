@@ -26,25 +26,25 @@ export const columns: ColumnDef<ClientInterface>[] = [
         header: 'Email',
     },
     {
-        accessorKey: 'document',
+        accessorKey: 'document_number',
         header: 'Documento',
         cell: ({ row }: { row: { original: ClientInterface } }) => {
-            if (row.original.document.length === 11) {
-                return cpf.format(row.original.document);
+            if (row.original.document_number.length === 11) {
+                return cpf.format(row.original.document_number);
             }
 
-            if (row.original.document.length === 14) {
-                return cnpj.format(row.original.document);
+            if (row.original.document_number.length === 14) {
+                return cnpj.format(row.original.document_number);
             }
 
-            return row.original.document;
+            return row.original.document_number;
         },
     },
     {
         accessorKey: 'phone',
         header: 'Telefone',
         cell: ({ row }: { row: { original: ClientInterface } }) => {
-            return formatPhone(row.original.phone.number);
+            return formatPhone(row.original.phone);
         },
     },
     {

@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('brand');
             $table->string('model');
             $table->integer('year');
-            $table->string('type');
+            $table->string('type')->nullable();
             $table->string('license_plate')->nullable();
             $table->string('vin')->nullable();
             $table->string('transmission')->nullable();

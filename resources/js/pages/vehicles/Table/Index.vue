@@ -24,31 +24,21 @@ const props = defineProps<{
 
 const {
     vehiclesData, totalItems,
-    currentPage, pageSize, searchTerm, sorting,
+    currentPage, pageSize, searchTerm, vehicleType, sorting,
     fetchCars, onSortingChange, goToNextPage, goToPreviousPage
 } = useVehiclesTable();
 
 const columnFilters = ref<ColumnFiltersState>([]);
 const emit = defineEmits(['create']);
 
-const vehicles: VehiclesInterface[] = [
-    {
-        id: '1',
-        model: 'Toyota Corolla',
-        year: 2020,
-        licensePlate: 'ABC1234',
-        type: 'car',
-        client: 'John Doe',
-        phone: '555-1234',
-        last_service_date: '2023-01-01',
-        status: 'active',
-    }
-]
+const handleVehicleTypeChange = (value: any) => {
+    vehicleType.value = String(value || '');
+};
 
 
 const table = useVueTable({
     get data() {
-        return vehicles;
+        return vehiclesData.value;
     },
     get columns() {
         return props.columns;
@@ -86,21 +76,27 @@ defineExpose({
     <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
         <div class="flex justify-between py-4">
             <div class="flex gap-3 w-[80%]">
-                <Input class="w-[50%]" placeholder="Pesquisar ..." v-model="searchTerm" />
-                <div class="w-[25%]">
-                    <Select>
+                <Input class="w-[50%]" placeholder="Pesquisar por marca, modelo, placa, cor ou cliente..."
+                    v-model="searchTerm" />
+                <div class="w-[25%] flex gap-2">
+                    <Select :model-value="vehicleType || undefined" @update:model-value="handleVehicleTypeChange">
                         <SelectTrigger class="w-full">
                             <SelectValue placeholder="Tipo" />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectGroup>
-                                <SelectLabel>Fruits</SelectLabel>
-                                <SelectItem value="apple">
-                                    Apple
+                                <SelectItem value="car">
+                                    Carro
+                                </SelectItem>
+                                <SelectItem value="motorcycle">
+                                    Moto
                                 </SelectItem>
                             </SelectGroup>
                         </SelectContent>
                     </Select>
+                    <Button v-if="vehicleType" variant="ghost" size="sm" @click="vehicleType = ''" class="px-2">
+                        ✕
+                    </Button>
                 </div>
                 <div class="w-[25%]">
                     <Select>

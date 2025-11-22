@@ -1,34 +1,31 @@
 export interface VehiclesInterface {
     id?: string;
-    clientId?: string;
-    clientName?: string;
-    client?: string;
-    brand?: string;
+    client_id?: string;
+    brand: string;
     model: string;
     year: number;
-    licensePlate?: string;
+    plate: string;
     color?: string;
-    typeVehicle?: VehicleType;
-    
-    displacement?: string;
-    fuel?: FuelType | string;
-    transmission?: TransmissionType | string;
+    vehicle_type?: VehicleType;
+    cilinder_capacity?: string;
+    fuel?: FuelType;
+    transmission?: TransmissionType;
     mileage?: number;
-    chassis?: string;
-    
+    vin?: string;
     observations?: string;
-    
-    phone?: string;
-    last_service_date?: string;
-    status?: string;
+    client?: ClientInfo;
 }
 
-export type VehicleType = 'car' | 'motorcycle';
-export type FuelType = 'alcohol' | 'gasoline' | 'diesel';
-export type TransmissionType = 'manual' | 'automatic';
+export interface ClientInfo {
+    id: string;
+    name: string;
+    email: string;
+    document_number: string;
+    phone: string;
+}
 
 export interface VehiclesResult {
-    totalItems: number;
+    total_items: number;
     items: VehiclesInterface[];
 }
 
@@ -39,4 +36,9 @@ export interface VehicleFilterSearchResponse {
 export interface ClientOption {
     id: string;
     name: string;
+    document_number: string;
 }
+
+export type VehicleType = 'car' | 'motorcycle';
+export type FuelType = 'alcohol' | 'gasoline' | 'diesel';
+export type TransmissionType = 'manual' | 'automatic';

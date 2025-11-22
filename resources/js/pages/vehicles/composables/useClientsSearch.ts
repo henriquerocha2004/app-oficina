@@ -20,11 +20,11 @@ export function useClientsSearch() {
     
     try {
       const params: SearchParams = {
-        limit: 20,
+        per_page: 20,
         page: 1,
         search: query,
-        sort: 'asc',
-        sortField: 'name',
+        sort_direction: 'asc',
+        sort_by: 'name',
       }
 
       const response = await ClientsApi.search(params)
@@ -36,9 +36,9 @@ export function useClientsSearch() {
       }
       
       clients.value = response.clients.items.map((client) => ({
-        id: client.id.toString(),
+        id: client?.id?.toString() ?? '',
         name: client.name,
-        document: client.document,
+        document_number: client.document_number,
       }))
 
     } catch (error) {

@@ -8,8 +8,8 @@ import { ref } from 'vue'
 vi.mock('@/pages/vehicles/composables/useClientsSearch', () => ({
   useClientsSearch: () => ({
     clients: ref([
-      { id: '1', name: 'João Silva', document: '123.456.789-00' },
-      { id: '2', name: 'Maria Santos', document: '987.654.321-00' }
+      { id: '1', name: 'João Silva', document_number: '123.456.789-00' },
+      { id: '2', name: 'Maria Santos', document_number: '987.654.321-00' }
     ]),
     isLoading: ref(false),
     searchClients: vi.fn(),
@@ -41,15 +41,13 @@ describe('Vehicles Form.vue', () => {
 
         // Fill required fields manually through form values
         await (wrapper.vm as any).form.setValues({
-            clientId: '1',
+            client_id: '1',
             brand: 'Honda',
             model: 'Civic',
             year: 2022,
-            licensePlate: 'ABC1234',
+            plate: 'ABC1234',
             type: 'car',
             color: 'Azul',
-            displacement: '2.0',
-            mileage: 25000,
         })
 
         // Validate and submit
@@ -70,29 +68,20 @@ describe('Vehicles Form.vue', () => {
             brand: 'Honda',
             model: 'Civic',
             year: 2022,
-            licensePlate: 'ABC1234',
+            plate: 'ABC1234',
             color: 'Azul',
-            displacement: '2.0',
-            mileage: 25000,
         })
     })
 
     it('fills fields when editing (props.vehicle) and submits with edit mode', async () => {
         const mockVehicle = {
             id: '1',
-            clientId: '1',
+            client_id: '1',
             brand: 'Toyota',
             model: 'Corolla',
             year: 2020,
-            licensePlate: 'XYZ9876',
+            plate: 'XYZ9876',
             color: 'Branco',
-            type: 'car' as const,
-            displacement: '1.8',
-            fuel: 'gasoline' as const,
-            transmission: 'automatic' as const,
-            mileage: 50000,
-            chassis: '123456789',
-            observations: 'Veículo em bom estado',
         }
 
         const wrapper = mount(Form, {
@@ -128,7 +117,6 @@ describe('Vehicles Form.vue', () => {
         expect(payload.mode).toBe('edit')
         expect(payload.data.brand).toBe('Toyota')
         expect(payload.data.model).toBe('Corolla')
-        expect(payload.data.displacement).toBe('1.8')
     })
 
     it('formats license plate correctly', async () => {
@@ -247,26 +235,19 @@ describe('Vehicles Form.vue', () => {
 
         // Access normalizeFormData method (would need to be exposed or tested indirectly)
         const formData = {
-            clientId: '1',
+            client_id: '1',
             brand: 'honda',
             model: 'civic',
             year: 2021,
-            licensePlate: 'def5678',
+            plate: 'def5678',
             color: 'verde',
-            type: 'car',
-            displacement: '1.6',
-            fuel: 'gasoline',
-            transmission: 'manual',
-            mileage: 30000,
-            chassis: '987654321',
-            observations: 'Teste',
         }
 
         const normalized = (wrapper.vm as any).normalizeFormData(formData)
         
-        expect(normalized.licensePlate).toBe('DEF5678') // Should be uppercase
-        expect(normalized.displacement).toBe('1.6')
-        expect(normalized.fuel).toBe('gasoline')
-        expect(normalized.mileage).toBe(30000)
+        expect(normalized.plate).toBe('DEF5678') // Should be uppercase
+        expect(normalized.client_id).toBe('1')
+        expect(normalized.brand).toBe('honda')
+        expect(normalized.model).toBe('civic')
     })
 })

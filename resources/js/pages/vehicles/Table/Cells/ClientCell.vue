@@ -8,7 +8,7 @@ defineProps<{ vehicle: VehiclesInterface }>();
 
 <template>
   <div class="flex flex-col">
-    <span class="text-sm">{{ vehicle.client || "-" }}</span>
-    <span class="text-sm">{{ formatPhone(vehicle.phone || "-") }}</span>
+    <span class="text-sm">{{ vehicle.client?.name || "-" }}</span>
+    <span class="text-sm">{{ formatPhone(vehicle.client?.phone || "-") }}</span>
   </div>
 </template>

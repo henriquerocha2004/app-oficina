@@ -16,14 +16,12 @@ class ClientRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255'],
-            'document' => ['required', 'string', 'max:20'],
-            'address' => ['required', 'array'],
-            'address.street' => ['required', 'string', 'max:255'],
-            'address.city' => ['required', 'string', 'max:100'],
-            'address.state' => ['required', 'string', 'max:100'],
-            'address.zipCode' => ['required', 'string', 'max:10'],
+            'document_number' => ['required', 'string', 'max:20'],
             'phone' => ['required', 'string', 'max:15'],
-            'observations' => ['nullable', 'string'],
+            'street' => ['nullable', 'string', 'max:255'],
+            'city' => ['nullable', 'string', 'max:100'],
+            'state' => ['nullable', 'string', 'max:100'],
+            'zip_code' => ['nullable', 'string', 'max:10'],
         ];
     }
 }

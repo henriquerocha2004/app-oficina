@@ -2,39 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use Throwable;
-use Inertia\Inertia;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Log;
+use App\DTOs\VehicleInputDTO;
+use App\DTOs\SearchDTO;
+use App\Services\VehicleService;
 use App\Http\Requests\CreateVehicleRequest;
 use App\Http\Requests\UpdateVehicleRequest;
-use App\Http\Requests\SearchInputRequest;
+use App\Http\Resources\VehicleResource;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 use Symfony\Component\HttpFoundation\Response;
-use AppOficina\Vehicles\UseCases\CreateVehicle\CreateVehicleUseCase;
-use AppOficina\Vehicles\UseCases\FindVehicleByIdUseCase;
-use AppOficina\Vehicles\UseCases\UpdateVehicle\UpdateVehicleUseCase;
-use AppOficina\Vehicles\UseCases\DeleteVehicleUseCase;
-use AppOficina\Vehicles\UseCases\ListVehiclesUseCase;
-use AppOficina\Vehicles\UseCases\FindVehiclesByClientIdUseCase;
-use AppOficina\Vehicles\UseCases\FindVehicleByLicencePlateUseCase;
-use AppOficina\Vehicles\UseCases\FindVehicleByVinUseCase;
-use AppOficina\Vehicles\Exceptions\VehicleNotFoundException;
-use AppOficina\Vehicles\UseCases\CreateVehicle\Input as CreateVehicleInput;
-use AppOficina\Vehicles\UseCases\UpdateVehicle\Input as UpdateVehicleInput;
-use AppOficina\Shared\Search\SearchRequest;
 
 class VehiclesController extends Controller
 {
     public function __construct(
-        private readonly CreateVehicleUseCase $createVehicleUseCase,
-        private readonly FindVehicleByIdUseCase $findVehicleByIdUseCase,
-        private readonly UpdateVehicleUseCase $updateVehicleUseCase,
-        private readonly DeleteVehicleUseCase $deleteVehicleUseCase,
-        private readonly ListVehiclesUseCase $listVehiclesUseCase,
-        private readonly FindVehiclesByClientIdUseCase $findVehiclesByClientIdUseCase,
-        private readonly FindVehicleByLicencePlateUseCase $findVehicleByLicencePlateUseCase,
-        private readonly FindVehicleByVinUseCase $findVehicleByVinUseCase
+        private VehicleService $vehicleService
     ) {
     }
 
@@ -46,36 +30,21 @@ class VehiclesController extends Controller
     public function store(CreateVehicleRequest $request): JsonResponse
     {
         try {
-            $input = new CreateVehicleInput(
-                brand: $request->validated('brand'),
-                model: $request->validated('model'),
-                year: $request->validated('year'),
-                type: $request->validated('typeVehicle'),
-                clientId: $request->validated('clientId'),
-                licensePlate: $request->validated('licensePlate'),
-                vin: $request->validated('vin'),
-                color: $request->validated('color'),
-                mileage: $request->validated('mileage'),
-                transmission: $request->validated('transmission'),
-                cilinderCapacity: $request->validated('engineSize'),
-                observations: $request->validated('observations'),
-            );
-
-            $output = $this->createVehicleUseCase->execute($input);
+            $dto = VehicleInputDTO::fromArray($request->validated());
+            $vehicle = $this->vehicleService->create($dto);
 
             return response()->json([
                 'message' => 'Vehicle created successfully',
-                'car_id' => $output->carId,
+                'vehicle_id' => $vehicle->id,
             ], Response::HTTP_CREATED);
-        } catch (Throwable $throwable) {
-            Log::error('Error creating car: ' . $throwable->getMessage(), [
-                'exception' => $throwable,
-                'request_data' => $request->all(),
+        } catch (\Exception $e) {
+            Log::error('Error creating vehicle', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return response()->json([
-                'message' => 'Error creating car',
-                'error' => $throwable->getMessage(),
+                'message' => 'An error occurred while creating the vehicle',
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -83,24 +52,24 @@ class VehiclesController extends Controller
     public function showById(string $id): JsonResponse
     {
         try {
-            $car = $this->findVehicleByIdUseCase->execute($id);
+            $vehicle = $this->vehicleService->find($id);
+
+            if (!$vehicle) {
+                return response()->json(['message' => 'Vehicle not found.'], Response::HTTP_NOT_FOUND);
+            }
 
             return response()->json([
-                'car' => $car,
+                'vehicle' => new VehicleResource($vehicle),
             ], Response::HTTP_OK);
-        } catch (VehicleNotFoundException $exception) {
-            return response()->json([
-                'message' => $exception->getMessage(),
-            ], Response::HTTP_NOT_FOUND);
-        } catch (Throwable $throwable) {
-            Log::error('Error fetching car: ' . $throwable->getMessage(), [
-                'exception' => $throwable,
-                'car_id' => $id,
+        } catch (\Exception $e) {
+            Log::error('Error fetching vehicle', [
+                'vehicle_id' => $id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return response()->json([
-                'message' => 'Error fetching car',
-                'error' => $throwable->getMessage(),
+                'message' => 'An error occurred while fetching the vehicle',
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -108,37 +77,25 @@ class VehiclesController extends Controller
     public function update(string $id, UpdateVehicleRequest $request): JsonResponse
     {
         try {
-            $input = new UpdateVehicleInput(
-                carId: $id,
-                brand: $request->validated('brand'),
-                model: $request->validated('model'),
-                year: $request->validated('year'),
-                type: $request->validated('typeVehicle'),
-                clientId: $request->validated('clientId'),
-                licencePlate: $request->validated('licencePlate'),
-                vin: $request->validated('vin'),
-                color: $request->validated('color'),
-                mileage: $request->validated('mileage'),
-                transmission: $request->validated('transmission'),
-                cilinderCapacity: $request->validated('engineSize'),
-                observations: $request->validated('observations'),
-            );
-
-            $this->updateVehicleUseCase->execute($input);
+            $dto = VehicleInputDTO::fromArray($request->validated());
+            $this->vehicleService->update($id, $dto);
 
             return response()->json([
                 'message' => 'Vehicle updated successfully',
             ], Response::HTTP_OK);
-        } catch (Throwable $throwable) {
-            Log::error('Error updating car: ' . $throwable->getMessage(), [
-                'exception' => $throwable,
-                'car_id' => $id,
-                'request_data' => $request->all(),
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'Vehicle not found.',
+            ], Response::HTTP_NOT_FOUND);
+        } catch (\Exception $e) {
+            Log::error('Error updating vehicle', [
+                'vehicle_id' => $id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return response()->json([
-                'message' => 'Error updating car',
-                'error' => $throwable->getMessage(),
+                'message' => 'An error occurred while updating the vehicle',
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -146,54 +103,48 @@ class VehiclesController extends Controller
     public function delete(string $id): JsonResponse
     {
         try {
-            $this->deleteVehicleUseCase->execute($id);
+            $deleted = $this->vehicleService->delete($id);
+
+            if (!$deleted) {
+                return response()->json(['message' => 'Vehicle not found.'], Response::HTTP_NOT_FOUND);
+            }
 
             return response()->json([
                 'message' => 'Vehicle deleted successfully',
             ], Response::HTTP_OK);
-        } catch (VehicleNotFoundException $exception) {
-            return response()->json([
-                'message' => $exception->getMessage(),
-            ], Response::HTTP_NOT_FOUND);
-        } catch (Throwable $throwable) {
-            Log::error('Error deleting car: ' . $throwable->getMessage(), [
-                'exception' => $throwable,
-                'car_id' => $id,
+        } catch (\Exception $e) {
+            Log::error('Error deleting vehicle', [
+                'vehicle_id' => $id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return response()->json([
-                'message' => 'Error deleting car',
-                'error' => $throwable->getMessage(),
+                'message' => 'An error occurred while deleting the vehicle',
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    public function findByFilters(SearchInputRequest $request): JsonResponse
+    public function findByFilters(Request $request): JsonResponse
     {
         try {
-            $filters = new SearchRequest(
-                page: (int) $request->validated('page', 1),
-                limit: (int) $request->validated('limit', 10),
-                sort: $request->validated('sort', 'asc'),
-                sortField: $request->validated('sortField', 'id'),
-                search: $request->validated('search') ?? '',
-                columnSearch: $request->validated('columnSearch', []),
-            );
-
-            $cars = $this->listVehiclesUseCase->execute($filters);
+            $searchDTO = SearchDTO::fromRequest($request);
+            $vehicles = $this->vehicleService->list($searchDTO);
 
             return response()->json([
-                'vehicles' => $cars,
+                'vehicles' => [
+                    'items' => VehicleResource::collection($vehicles->items()),
+                    'total_items' => $vehicles->total(),
+                ],
             ], Response::HTTP_OK);
-        } catch (Throwable $throwable) {
-            Log::error('Error fetching cars by filters: ' . $throwable->getMessage(), [
-                'exception' => $throwable,
-                'filters' => $request->all(),
+        } catch (\Exception $e) {
+            Log::error('Error listing vehicles', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return response()->json([
-                'message' => 'Error fetching cars by filters',
-                'error' => $throwable->getMessage(),
+                'message' => 'An error occurred while listing vehicles',
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -201,45 +152,45 @@ class VehiclesController extends Controller
     public function findByClientId(string $clientId): JsonResponse
     {
         try {
-            $cars = $this->findVehiclesByClientIdUseCase->execute($clientId);
+            $vehicles = $this->vehicleService->findByClientId($clientId);
 
             return response()->json([
-                'vehicles' => $cars,
+                'vehicles' => VehicleResource::collection($vehicles),
             ], Response::HTTP_OK);
-        } catch (Throwable $throwable) {
-            Log::error('Error fetching cars by client ID: ' . $throwable->getMessage(), [
-                'exception' => $throwable,
+        } catch (\Exception $e) {
+            Log::error('Error fetching vehicles by client', [
                 'client_id' => $clientId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return response()->json([
-                'message' => 'Error fetching cars by client ID',
-                'error' => $throwable->getMessage(),
+                'message' => 'An error occurred while fetching vehicles',
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    public function findByLicencePlate(string $licencePlate): JsonResponse
+    public function findByLicensePlate(string $licensePlate): JsonResponse
     {
         try {
-            $car = $this->findVehicleByLicencePlateUseCase->execute($licencePlate);
+            $vehicle = $this->vehicleService->findByLicensePlate($licensePlate);
+
+            if (!$vehicle) {
+                return response()->json(['message' => 'Vehicle not found.'], Response::HTTP_NOT_FOUND);
+            }
 
             return response()->json([
-                'car' => $car,
+                'vehicle' => new VehicleResource($vehicle),
             ], Response::HTTP_OK);
-        } catch (VehicleNotFoundException $exception) {
-            return response()->json([
-                'message' => $exception->getMessage(),
-            ], Response::HTTP_NOT_FOUND);
-        } catch (Throwable $throwable) {
-            Log::error('Error fetching car by licence plate: ' . $throwable->getMessage(), [
-                'exception' => $throwable,
-                'license_plate' => $licencePlate,
+        } catch (\Exception $e) {
+            Log::error('Error fetching vehicle by license plate', [
+                'license_plate' => $licensePlate,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return response()->json([
-                'message' => 'Error fetching car by licence plate',
-                'error' => $throwable->getMessage(),
+                'message' => 'An error occurred while fetching the vehicle',
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -247,24 +198,24 @@ class VehiclesController extends Controller
     public function findByVin(string $vin): JsonResponse
     {
         try {
-            $car = $this->findVehicleByVinUseCase->execute($vin);
+            $vehicle = $this->vehicleService->findByVin($vin);
+
+            if (!$vehicle) {
+                return response()->json(['message' => 'Vehicle not found.'], Response::HTTP_NOT_FOUND);
+            }
 
             return response()->json([
-                'car' => $car,
+                'vehicle' => new VehicleResource($vehicle),
             ], Response::HTTP_OK);
-        } catch (VehicleNotFoundException $exception) {
-            return response()->json([
-                'message' => $exception->getMessage(),
-            ], Response::HTTP_NOT_FOUND);
-        } catch (Throwable $throwable) {
-            Log::error('Error fetching car by VIN: ' . $throwable->getMessage(), [
-                'exception' => $throwable,
+        } catch (\Exception $e) {
+            Log::error('Error fetching vehicle by VIN', [
                 'vin' => $vin,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return response()->json([
-                'message' => 'Error fetching car by VIN',
-                'error' => $throwable->getMessage(),
+                'message' => 'An error occurred while fetching the vehicle',
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

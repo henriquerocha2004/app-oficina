@@ -2,33 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use Throwable;
-use Inertia\Inertia;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Log;
+use App\DTOs\ClientInputDTO;
+use App\DTOs\SearchDTO;
+use App\Services\ClientService;
 use App\Http\Requests\ClientRequest;
-use App\Http\Requests\SearchInputRequest;
+use App\Http\Resources\ClientResource;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 use Symfony\Component\HttpFoundation\Response;
-use AppOficina\Clients\UseCases\FindClientByIdUseCase;
-use AppOficina\Clients\Exceptions\ClientNotFoundException;
-use AppOficina\Clients\UseCases\CreateClient\CreateClientUseCase;
-use AppOficina\Clients\UseCases\UpdateClient\UpdateClientUseCase;
-use AppOficina\Clients\UseCases\CreateClient\Input as CreateClientInput;
-use AppOficina\Clients\UseCases\DeleteClientUseCase;
-use AppOficina\Clients\UseCases\ListClientsUseCase;
-use AppOficina\Clients\UseCases\UpdateClient\Input as UpdateClientInput;
-use AppOficina\Shared\Search\SearchRequest;
-use Request;
 
 class ClientController extends Controller
 {
     public function __construct(
-        private readonly CreateClientUseCase $createClientUseCase,
-        private readonly FindClientByIdUseCase $findClientByIdUseCase,
-        private readonly UpdateClientUseCase $updateClientUseCase,
-        private readonly DeleteClientUseCase $deleteClientUseCase,
-        private readonly ListClientsUseCase $findClientsByFiltersUseCase
+        private ClientService $clientService
     ) {
     }
 
@@ -40,30 +29,28 @@ class ClientController extends Controller
     public function store(ClientRequest $request): JsonResponse
     {
         try {
-            $input = new CreateClientInput(
-                name: $request->validated('name'),
-                email: $request->validated('email'),
-                document: $request->validated('document'),
-                address: $request->validated('address'),
-                phone: $request->validated('phone'),
-                observations: $request->validated('observations'),
-            );
+            $dto = ClientInputDTO::fromArray($request->validated());
+            $result = $this->clientService->create($dto);
 
-            $output = $this->createClientUseCase->execute($input);
+            if (!$result->created) {
+                return response()->json([
+                    'message' => 'Client already exists',
+                    'client_id' => $result->client->id,
+                ], Response::HTTP_OK);
+            }
 
             return response()->json([
                 'message' => 'Client created successfully',
-                'client_id' => $output->clientId,
+                'client_id' => $result->client->id,
             ], Response::HTTP_CREATED);
-        } catch (Throwable $throwable) {
-            Log::error('Error creating client: ' . $throwable->getMessage(), [
-                'exception' => $throwable,
-                'request_data' => $request->all(),
+        } catch (\Exception $e) {
+            Log::error('Error creating client', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return response()->json([
-                'message' => 'Error creating client',
-                'error' => $throwable->getMessage(),
+                'message' => 'An error occurred while creating the client',
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -71,24 +58,24 @@ class ClientController extends Controller
     public function showById(string $id): JsonResponse
     {
         try {
-            $client = $this->findClientByIdUseCase->execute($id);
+            $client = $this->clientService->find($id);
+
+            if (!$client) {
+                return response()->json(['message' => 'Client not found.'], Response::HTTP_NOT_FOUND);
+            }
 
             return response()->json([
-                'client' => $client,
+                'client' => new ClientResource($client),
             ], Response::HTTP_OK);
-        } catch (ClientNotFoundException $exception) {
-            return response()->json([
-                'message' => $exception->getMessage(),
-            ], Response::HTTP_NOT_FOUND);
-        } catch (Throwable $throwable) {
-            Log::error('Error fetching client: ' . $throwable->getMessage(), [
-                'exception' => $throwable,
+        } catch (\Exception $e) {
+            Log::error('Error fetching client', [
                 'client_id' => $id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return response()->json([
-                'message' => 'Error fetching client',
-                'error' => $throwable->getMessage(),
+                'message' => 'An error occurred while fetching the client',
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -96,35 +83,25 @@ class ClientController extends Controller
     public function update(string $id, ClientRequest $request): JsonResponse
     {
         try {
-            $input = new UpdateClientInput(
-                clientId: $id,
-                name: $request->validated('name'),
-                email: $request->validated('email'),
-                document: $request->validated('document'),
-                address: $request->validated('address'),
-                phone: $request->validated('phone'),
-                observations: $request->validated('observations'),
-            );
-
-            $this->updateClientUseCase->execute($input);
+            $dto = ClientInputDTO::fromArray($request->validated());
+            $this->clientService->update($id, $dto);
 
             return response()->json([
                 'message' => 'Client updated successfully',
             ], Response::HTTP_OK);
-        } catch (ClientNotFoundException $exception) {
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json([
-                'message' => $exception->getMessage(),
+                'message' => 'Client not found.',
             ], Response::HTTP_NOT_FOUND);
-        } catch (Throwable $throwable) {
-            Log::error('Error updating client: ' . $throwable->getMessage(), [
-                'exception' => $throwable,
+        } catch (\Exception $e) {
+            Log::error('Error updating client', [
                 'client_id' => $id,
-                'request_data' => $request->all(),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return response()->json([
-                'message' => 'Error updating client',
-                'error' => $throwable->getMessage(),
+                'message' => 'An error occurred while updating the client',
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -132,54 +109,48 @@ class ClientController extends Controller
     public function delete(string $id): JsonResponse
     {
         try {
-            $this->deleteClientUseCase->execute($id);
+            $deleted = $this->clientService->delete($id);
+
+            if (!$deleted) {
+                return response()->json(['message' => 'Client not found.'], Response::HTTP_NOT_FOUND);
+            }
 
             return response()->json([
                 'message' => 'Client deleted successfully',
             ], Response::HTTP_OK);
-        } catch (ClientNotFoundException $exception) {
-            return response()->json([
-                'message' => $exception->getMessage(),
-            ], Response::HTTP_NOT_FOUND);
-        } catch (Throwable $throwable) {
-            Log::error('Error deleting client: ' . $throwable->getMessage(), [
-                'exception' => $throwable,
+        } catch (\Exception $e) {
+            Log::error('Error deleting client', [
                 'client_id' => $id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return response()->json([
-                'message' => 'Error deleting client',
-                'error' => $throwable->getMessage(),
+                'message' => 'An error occurred while deleting the client',
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    public function findByFilters(SearchInputRequest $request): JsonResponse
+    public function findByFilters(Request $request): JsonResponse
     {
         try {
-            $filters = new SearchRequest(
-                page: (int) $request->validated('page', 1),
-                limit: (int) $request->validated('limit', 10),
-                sort: $request->validated('sort', 'asc'),
-                sortField: $request->validated('sortField', 'id'),
-                search: $request->validated('search') ?? '',
-                columnSearch: $request->validated('columnSearch', []),
-            );
-
-            $searchResponse = $this->findClientsByFiltersUseCase->execute($filters);
+            $searchDTO = SearchDTO::fromRequest($request);
+            $clients = $this->clientService->list($searchDTO);
 
             return response()->json([
-                'clients' => $searchResponse,
+                'clients' => [
+                    'items' => ClientResource::collection($clients->items()),
+                    'total_items' => $clients->total(),
+                ],
             ], Response::HTTP_OK);
-        } catch (Throwable $throwable) {
-            Log::error('Error fetching clients by filters: ' . $throwable->getMessage(), [
-                'exception' => $throwable,
-                'filters' => $request->all(),
+        } catch (\Exception $e) {
+            Log::error('Error listing clients', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return response()->json([
-                'message' => 'Error fetching clients by filters',
-                'error' => $throwable->getMessage(),
+                'message' => 'An error occurred while listing clients',
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
