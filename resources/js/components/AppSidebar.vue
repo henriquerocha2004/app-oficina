@@ -6,9 +6,10 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, Sid
 import { dashboard } from '@/routes';
 import { index } from '@/routes/clients';
 import { index as indexCar } from '@/routes/vehicles';
+import { index as indexServices } from '@/routes/services';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { Banknote, BookOpen, Car, ClipboardPaste, Folder, LayoutGrid, Package, User } from 'lucide-vue-next';
+import { Banknote, BookOpen, Car, ClipboardPaste, Folder, LayoutGrid, Package, User, Wrench } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
 const mainNavItems: NavItem[] = [
@@ -26,6 +27,11 @@ const mainNavItems: NavItem[] = [
         title: 'Veiculos',
         href: indexCar(),
         icon: Car,
+    },
+    {
+        title: 'Serviços',
+        href: indexServices(),
+        icon: Wrench,
     },
     {
         title: 'Ordems de Serviço',

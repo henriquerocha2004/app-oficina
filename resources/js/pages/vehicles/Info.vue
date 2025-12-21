@@ -70,7 +70,8 @@ function getTransmissionLabel(transmission?: string): string {
         <Drawer :open="props.show" @update:open="(value) => $emit('update:show', value)">
             <DrawerContent class="max-h-[90vh]">
                 <DrawerHeader>
-                    <DrawerTitle class="text-xl">{{ props.vehicle?.brand }} {{ props.vehicle?.model }} ({{ props.vehicle?.year }})</DrawerTitle>
+                    <DrawerTitle class="text-xl">{{ props.vehicle?.brand }} {{ props.vehicle?.model }} ({{
+                        props.vehicle?.year }})</DrawerTitle>
                     <p class="text-sm text-gray-500">Placa: {{ props.vehicle?.plate }}</p>
                 </DrawerHeader>
                 <div class="flex flex-row gap-4 p-4 overflow-y-auto">
@@ -113,7 +114,8 @@ function getTransmissionLabel(transmission?: string): string {
                         </div>
                         <div class="flex flex-col gap-1">
                             <p class="text-gray-400 font-bold">Quilometragem</p>
-                            <p class="font-bold">{{ props.vehicle?.mileage ? `${props.vehicle.mileage.toLocaleString('pt-BR')} km` : '45.000 km' }}</p>
+                            <p class="font-bold">{{ props.vehicle?.mileage ?
+                                `${props.vehicle.mileage.toLocaleString('pt-BR')} km` : '45.000 km' }}</p>
                         </div>
                     </div>
 
@@ -128,7 +130,8 @@ function getTransmissionLabel(transmission?: string): string {
                         </div>
                         <div class="flex flex-col gap-1">
                             <p class="text-gray-400 font-bold">Telefone</p>
-                            <p class="font-bold">{{ props.vehicle?.client?.phone ? formatPhone(props.vehicle.client.phone) : '-' }}</p>
+                            <p class="font-bold">{{ props.vehicle?.client?.phone ?
+                                formatPhone(props.vehicle.client.phone) : '-' }}</p>
                         </div>
                     </div>
 
@@ -138,7 +141,7 @@ function getTransmissionLabel(transmission?: string): string {
                             Histórico de Manutenção
                         </h2>
                         <div class="flex flex-col gap-3 max-h-[500px] overflow-y-auto">
-                            <div v-for="maintenance in maintenanceHistory" :key="maintenance.id" 
+                            <div v-for="maintenance in maintenanceHistory" :key="maintenance.id"
                                 class="flex flex-col gap-2 rounded-lg bg-gray-100 dark:bg-gray-700 p-4">
                                 <div class="flex flex-row gap-2 items-center">
                                     <Wrench class="h-5 w-5" />
@@ -150,7 +153,8 @@ function getTransmissionLabel(transmission?: string): string {
                                 </div>
                                 <div class="flex flex-row justify-between items-center">
                                     <span class="font-bold text-lg">{{ maintenance.price }}</span>
-                                    <span class="px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 rounded text-xs font-semibold">
+                                    <span
+                                        class="px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 rounded text-xs font-semibold">
                                         {{ maintenance.status }}
                                     </span>
                                 </div>
@@ -163,7 +167,8 @@ function getTransmissionLabel(transmission?: string): string {
                                 Observações
                             </h3>
                             <p class="text-sm">
-                                {{ props.vehicle?.observations || 'Veículo em excelente estado de conservação. Cliente muito cuidadoso.' }}
+                                {{ props.vehicle?.observations || 'Veículo em excelente estado de conservação. Cliente
+                                muito cuidadoso.' }}
                             </p>
                         </div>
                     </div>

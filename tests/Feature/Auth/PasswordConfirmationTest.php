@@ -1,10 +1,13 @@
 <?php
 
 use App\Models\User;
+use Tests\Helpers\TenantTestHelper;
 
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+uses(TenantTestHelper::class);
 
 test('confirm password screen can be rendered', function () {
+    $this->initializeTenant();
     $user = User::factory()->create();
 
     $response = $this->actingAs($user)->get(route('password.confirm'));
@@ -13,6 +16,7 @@ test('confirm password screen can be rendered', function () {
 });
 
 test('password can be confirmed', function () {
+    $this->initializeTenant();
     $user = User::factory()->create();
 
     $response = $this->actingAs($user)->post(route('password.confirm.store'), [
@@ -24,6 +28,7 @@ test('password can be confirmed', function () {
 });
 
 test('password is not confirmed with invalid password', function () {
+    $this->initializeTenant();
     $user = User::factory()->create();
 
     $response = $this->actingAs($user)->post(route('password.confirm.store'), [

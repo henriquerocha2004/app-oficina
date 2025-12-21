@@ -2,10 +2,13 @@
 
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Tests\Helpers\TenantTestHelper;
 
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+uses(TenantTestHelper::class);
 
 test('password update page is displayed', function () {
+    $this->initializeTenant();
     $user = User::factory()->create();
 
     $response = $this
@@ -16,6 +19,7 @@ test('password update page is displayed', function () {
 });
 
 test('password can be updated', function () {
+    $this->initializeTenant();
     $user = User::factory()->create();
 
     $response = $this
@@ -35,6 +39,7 @@ test('password can be updated', function () {
 });
 
 test('correct password must be provided to update password', function () {
+    $this->initializeTenant();
     $user = User::factory()->create();
 
     $response = $this

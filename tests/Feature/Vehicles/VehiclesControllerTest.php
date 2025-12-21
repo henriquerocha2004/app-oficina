@@ -9,12 +9,14 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 use Tests\Helpers\CpfGenerator;
+use Tests\Helpers\TenantTestHelper;
 use Symfony\Component\Uid\Ulid;
 
 class VehiclesControllerTest extends TestCase
 {
     use RefreshDatabase;
     use CpfGenerator;
+    use TenantTestHelper;
 
     private string $clientId;
     private User $user;
@@ -23,11 +25,14 @@ class VehiclesControllerTest extends TestCase
     {
         parent::setUp();
 
-        // Create and authenticate a test user
+        // Initialize tenant for testing
+        $this->initializeTenant();
+
+        // Create and authenticate a test user within tenant context
         $this->user = User::factory()->create();
         $this->actingAs($this->user);
 
-        // Create a test client
+        // Create a test client within tenant context
         $this->clientId = (new Ulid())->toString();
         Client::create([
             'id' => $this->clientId,

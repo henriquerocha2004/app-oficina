@@ -56,34 +56,31 @@ function refreshTable() {
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbs">
-        <DescriptionPage 
-            title="Gerenciamento de Veículos"
-            description="Gerencie veículos e histórico de manutenção"
-        />
+        <DescriptionPage title="Gerenciamento de Veículos" description="Gerencie veículos e histórico de manutenção" />
         <div class="flex flex-row gap-2 p-4">
             <Card class="w-[25%]">
                 <CardContent class="flex flex-row">
                     <div class="flex flex-col pt-3 gap-2 w-[80%]">
                         <span>Pendentes</span>
-                        <span class="text-2xl font-bold">150</span>                
+                        <span class="text-2xl font-bold">150</span>
                     </div>
                     <div class="flex items-center justify-center w-[20%]">
                         <div class="bg-blue-100 p-2 rounded-2xl mt-5 ml-4">
                             <History class="w-8 h-8 text-blue-500 dark:text-white" />
-                        </div> 
+                        </div>
                     </div>
                 </CardContent>
             </Card>
-             <Card class="w-[25%]">
+            <Card class="w-[25%]">
                 <CardContent class="flex flex-row">
                     <div class="flex flex-col pt-3 gap-2 w-[80%]">
                         <span>Em Manutenção</span>
-                        <span class="text-2xl font-bold">150</span>                
+                        <span class="text-2xl font-bold">150</span>
                     </div>
                     <div class="flex items-center justify-center w-[20%]">
                         <div class="bg-zinc-100 p-2 rounded-2xl mt-5 ml-4">
                             <WrenchIcon class="w-8 h-8 text-zinc-500 dark:text-white" />
-                        </div> 
+                        </div>
                     </div>
                 </CardContent>
             </Card>
@@ -91,47 +88,35 @@ function refreshTable() {
                 <CardContent class="flex flex-row">
                     <div class="flex flex-col pt-3 gap-2 w-[80%]">
                         <span>Orçamento a Aprovar</span>
-                        <span class="text-2xl font-bold">400</span>                
+                        <span class="text-2xl font-bold">400</span>
                     </div>
                     <div class="flex items-center justify-center w-[20%]">
                         <div class="bg-yellow-100 p-2 rounded-2xl mt-5 ml-4">
                             <CircleAlertIcon class="w-8 h-8 text-yellow-500 dark:text-white" />
-                        </div> 
+                        </div>
                     </div>
                 </CardContent>
             </Card>
-             <Card class="w-[25%]">
+            <Card class="w-[25%]">
                 <CardContent class="flex flex-row">
                     <div class="flex flex-col pt-3 gap-2 w-[80%]">
                         <span>Orçamento Aprovado</span>
-                        <span class="text-2xl font-bold">150</span>                
+                        <span class="text-2xl font-bold">150</span>
                     </div>
                     <div class="flex items-center justify-center w-[20%]">
                         <div class="bg-green-100 p-2 rounded-2xl mt-5 ml-4">
                             <CheckCircle class="w-8 h-8 text-green-500 dark:text-white" />
-                        </div> 
+                        </div>
                     </div>
                 </CardContent>
             </Card>
         </div>
         <Table :columns="columns" @create="showCreate = true" ref="tableComponent" />
-        
+
         <!-- Modals -->
-        <Create 
-            :show="showCreate" 
-            @update:show="showCreate = $event"
-            @created="refreshTable"
-        />
-        <Update 
-            :show="showUpdate" 
-            @update:show="showUpdate = $event" 
-            :vehicle-data="vehicleToEdit"
-            @updated="refreshTable" 
-        />
-        <Info 
-            :show="showInfo" 
-            @update:show="showInfo = $event" 
-            :vehicle="vehicleToView"
-        />
+        <Create :show="showCreate" @update:show="showCreate = $event" @created="refreshTable" />
+        <Update :show="showUpdate" @update:show="showUpdate = $event" :vehicle-data="vehicleToEdit"
+            @updated="refreshTable" />
+        <Info :show="showInfo" @update:show="showInfo = $event" :vehicle="vehicleToView" />
     </AppLayout>
-</template>    
+</template>

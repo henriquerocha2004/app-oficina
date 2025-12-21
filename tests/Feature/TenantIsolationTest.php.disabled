@@ -1,0 +1,116 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Models\Client;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Helpers\TenantTestHelper;
+use Tests\TestCase;
+
+class TenantIsolationTest extends TestCase
+{
+    use RefreshDatabase;
+    use TenantTestHelper;
+
+    public function testTenantDataIsIsolated(): void
+    {
+        // Create first tenant
+        $tenant1 = $this->initializeTenant(['id' => 'tenant1', 'name' => 'Tenant One']);
+        
+        // Create a client in tenant1
+        $client1 = Client::create([
+            'name' => 'Client from Tenant 1',
+            'email' => 'client1@tenant1.com',
+            'document_number' => '12345678901',
+        ]);
+
+        // Verify client exists in tenant1
+        $this->assertEquals(1, Client::count());
+        
+        // End tenancy
+        $this->endTenancy();
+
+        // Create second tenant
+        $tenant2 = $this->initializeTenant(['id' => 'tenant2', 'name' => 'Tenant Two']);
+        
+        // Verify no clients exist in tenant2 (data isolation)
+        $this->assertEquals(0, Client::count());
+        
+        // Create a different client in tenant2
+        $client2 = Client::create([
+            'name' => 'Client from Tenant 2',
+            'email' => 'client2@tenant2.com',
+            'document_number' => '98765432109',
+        ]);
+
+        // Verify only one client exists in tenant2
+        $this->assertEquals(1, Client::count());
+        
+        // Verify it's the correct client
+        $this->assertEquals('Client from Tenant 2', Client::first()->name);
+        
+        // End tenancy
+        $this->endTenancy();
+
+        // Switch back to tenant1
+        $this->actingAsTenant($tenant1);
+        
+        // Verify tenant1 still has only its own client
+        $this->assertEquals(1, Client::count());
+        $this->assertEquals('Client from Tenant 1', Client::first()->name);
+    }
+
+    public function testUsersAreIsolatedBetweenTenants(): void
+    {
+        // Create first tenant with a user
+        $tenant1 = $this->initializeTenant(['id' => 'tenant1-users']);
+        $user1 = User::factory()->create(['email' => 'user1@tenant1.com']);
+        
+        $this->assertEquals(1, User::count());
+        
+        // Create second tenant
+        $this->endTenancy();
+        $tenant2 = $this->initializeTenant(['id' => 'tenant2-users']);
+        
+        // Verify no users from tenant1 appear in tenant2
+        $this->assertEquals(0, User::count());
+        
+        // Create user in tenant2
+        $user2 = User::factory()->create(['email' => 'user2@tenant2.com']);
+        
+        // Verify isolation
+        $this->assertEquals(1, User::count());
+        $this->assertEquals('user2@tenant2.com', User::first()->email);
+        
+        // Switch back to tenant1
+        $this->endTenancy();
+        $this->actingAsTenant($tenant1);
+        
+        // Verify tenant1 data unchanged
+        $this->assertEquals(1, User::count());
+        $this->assertEquals('user1@tenant1.com', User::first()->email);
+    }
+
+    public function testCentralDatabaseDataPersistsAcrossTenants(): void
+    {
+        // Verify subscription plans exist in central database
+        $this->endTenancy(); // Make sure we're on central
+        
+        $planCount = \App\Models\SubscriptionPlan::count();
+        
+        // Create tenant1
+        $tenant1 = $this->initializeTenant(['id' => 'central-test-1']);
+        $this->endTenancy();
+        
+        // Create tenant2
+        $tenant2 = $this->initializeTenant(['id' => 'central-test-2']);
+        $this->endTenancy();
+        
+        // Verify both tenants exist in central database
+        $this->assertEquals(2, \App\Models\Tenant::whereIn('id', ['central-test-1', 'central-test-2'])->count());
+        
+        // Verify subscription plans are still accessible (central data)
+        $this->assertGreaterThanOrEqual($planCount, \App\Models\SubscriptionPlan::count());
+    }
+}

@@ -4,10 +4,13 @@ use App\Models\User;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\URL;
+use Tests\Helpers\TenantTestHelper;
 
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+uses(TenantTestHelper::class);
 
 test('email verification screen can be rendered', function () {
+    $this->initializeTenant();
     $user = User::factory()->unverified()->create();
 
     $response = $this->actingAs($user)->get(route('verification.notice'));
@@ -16,6 +19,7 @@ test('email verification screen can be rendered', function () {
 });
 
 test('email can be verified', function () {
+    $this->initializeTenant();
     $user = User::factory()->unverified()->create();
 
     Event::fake();
@@ -34,6 +38,7 @@ test('email can be verified', function () {
 });
 
 test('email is not verified with invalid hash', function () {
+    $this->initializeTenant();
     $user = User::factory()->unverified()->create();
 
     Event::fake();
@@ -51,6 +56,7 @@ test('email is not verified with invalid hash', function () {
 });
 
 test('email is not verified with invalid user id', function () {
+    $this->initializeTenant();
     $user = User::factory()->unverified()->create();
 
     Event::fake();
@@ -68,6 +74,7 @@ test('email is not verified with invalid user id', function () {
 });
 
 test('verified user is redirected to dashboard from verification prompt', function () {
+    $this->initializeTenant();
     $user = User::factory()->create();
 
     Event::fake();
@@ -79,6 +86,7 @@ test('verified user is redirected to dashboard from verification prompt', functi
 });
 
 test('already verified user visiting verification link is redirected without firing event again', function () {
+    $this->initializeTenant();
     $user = User::factory()->create();
 
     Event::fake();

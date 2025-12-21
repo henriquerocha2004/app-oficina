@@ -12,8 +12,34 @@
 */
 
 pest()->extend(Tests\TestCase::class)
- // ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
+    ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
     ->in('Feature');
+
+/*
+|--------------------------------------------------------------------------
+| Tenant Test Helpers
+|--------------------------------------------------------------------------
+|
+| These helpers make it easy to test multi-tenant functionality.
+| Use initializeTenant() to create and initialize a test tenant.
+|
+*/
+
+/**
+ * Initialize a test tenant for the current test
+ */
+function testTenant(array $attributes = []): App\Models\Tenant
+{
+    return test()->initializeTenant($attributes);
+}
+
+/**
+ * End the current tenancy context
+ */
+function endTestTenancy(): void
+{
+    tenancy()->end();
+}
 
 /*
 |--------------------------------------------------------------------------
@@ -45,3 +71,48 @@ function something()
 {
     // ..
 }
+
+/*
+|--------------------------------------------------------------------------
+| Cleanup Tenant Test Databases
+|--------------------------------------------------------------------------
+|
+| After all tests complete, cleanup any remaining tenant test databases.
+| This prevents database pollution from test runs.
+|
+*/
+
+// Capture database credentials while Laravel is available
+// Note: APP_ENV will be 'testing' during actual test execution
+$cleanupDbHost = env('DB_HOST', 'oficina-db');
+$cleanupDbUser = env('DB_USERNAME', 'root');
+$cleanupDbPass = env('DB_PASSWORD', 'root');
+
+register_shutdown_function(function () use ($cleanupDbHost, $cleanupDbUser, $cleanupDbPass) {
+    try {
+        // Check if running in test context via phpunit.xml env override
+        // Using $_ENV here because it's guaranteed to be available during shutdown
+        $isTestEnv = isset($_ENV['APP_ENV']) && $_ENV['APP_ENV'] === 'testing';
+
+        if (!$isTestEnv) {
+            return;
+        }
+
+        $pdo = new PDO("mysql:host={$cleanupDbHost}", $cleanupDbUser, $cleanupDbPass);
+
+        // Cleanup tenant test databases
+        $stmt = $pdo->query("SHOW DATABASES LIKE 'tenanttest%'");
+        $databases = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+        foreach ($databases as $db) {
+            $pdo->exec("DROP DATABASE IF EXISTS `{$db}`");
+        }
+
+        // Optionally cleanup central test database
+        // Uncomment the line below to delete it after each test run
+        // WARNING: This makes subsequent test runs 5-10s slower
+        // $pdo->exec("DROP DATABASE IF EXISTS `app_oficina_central_test`");
+    } catch (\Throwable $e) {
+        // Silently fail - cleanup is not critical
+    }
+});
