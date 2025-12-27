@@ -7,12 +7,22 @@ import { dashboard } from '@/routes';
 import { index } from '@/routes/clients';
 import { index as indexCar } from '@/routes/vehicles';
 import { index as indexServices } from '@/routes/services';
+import admin from '@/routes/admin';
 import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/vue3';
-import { Banknote, BookOpen, Car, ClipboardPaste, Folder, LayoutGrid, Package, User, Wrench } from 'lucide-vue-next';
+import { Link, usePage } from '@inertiajs/vue3';
+import { Banknote, BookOpen, Building2, Car, ClipboardPaste, Folder, LayoutGrid, Package, User, Wrench } from 'lucide-vue-next';
+import { computed } from 'vue';
 import AppLogo from './AppLogo.vue';
 
-const mainNavItems: NavItem[] = [
+const page = usePage();
+
+// Detectar se estamos no painel admin
+const isAdminPanel = computed(() => {
+    return page.url.startsWith('/admin');
+});
+
+// Menu do painel principal (tenant)
+const tenantNavItems: NavItem[] = [
     {
         title: 'Dashboard',
         href: dashboard(),
@@ -50,6 +60,30 @@ const mainNavItems: NavItem[] = [
     },
 ];
 
+// Menu do painel admin
+const adminNavItems: NavItem[] = [
+    {
+        title: 'Dashboard',
+        href: admin.dashboard.url(),
+        icon: LayoutGrid,
+    },
+    {
+        title: 'Planos',
+        href: admin.plans.index.url(),
+        icon: Package,
+    },
+    {
+        title: 'Oficinas',
+        href: admin.tenants.index.url(),
+        icon: Building2,
+    },
+];
+
+// Selecionar menu baseado no contexto
+const mainNavItems = computed(() => {
+    return isAdminPanel.value ? adminNavItems : tenantNavItems;
+});
+
 const footerNavItems: NavItem[] = [
     {
         title: 'Github Repo',
@@ -62,6 +96,11 @@ const footerNavItems: NavItem[] = [
         icon: BookOpen,
     },
 ];
+
+// Dashboard link baseado no contexto
+const dashboardLink = computed(() => {
+    return isAdminPanel.value ? admin.dashboard.url() : dashboard();
+});
 </script>
 
 <template>
@@ -70,8 +109,8 @@ const footerNavItems: NavItem[] = [
             <SidebarMenu>
                 <SidebarMenuItem>
                     <SidebarMenuButton size="lg" as-child>
-                        <Link :href="dashboard()">
-                        <AppLogo />
+                        <Link :href="dashboardLink">
+                            <AppLogo />
                         </Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>

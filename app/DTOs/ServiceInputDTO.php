@@ -11,7 +11,8 @@ readonly class ServiceInputDTO
         public ?string $description = null,
         public ?int $estimated_time = null,
         public bool $is_active = true,
-    ) {}
+    ) {
+    }
 
     public static function fromArray(array $data): self
     {

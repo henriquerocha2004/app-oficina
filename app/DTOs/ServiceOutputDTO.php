@@ -16,7 +16,8 @@ readonly class ServiceOutputDTO
         public bool $is_active = true,
         public ?string $created_at = null,
         public ?string $updated_at = null,
-    ) {}
+    ) {
+    }
 
     public static function fromModel(Service $service): self
     {

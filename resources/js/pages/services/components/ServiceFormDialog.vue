@@ -46,6 +46,13 @@ const formData = ref<ServiceFormData>({
     is_active: true,
 });
 
+// Ref local para o checkbox
+const isActiveCheckbox = ref(true);
+
+function changeCheckbox(value: boolean) {
+    formData.value.is_active = value;
+}
+
 const loading = ref(false);
 const errors = ref<Record<string, string[]>>({});
 
@@ -61,6 +68,7 @@ watch(
                 estimated_time: service.estimated_time?.toString() || '',
                 is_active: service.is_active,
             };
+            isActiveCheckbox.value = Boolean(service.is_active);
         } else {
             resetForm();
         }
@@ -77,6 +85,7 @@ function resetForm() {
         estimated_time: '',
         is_active: true,
     };
+    isActiveCheckbox.value = true;
     errors.value = {};
 }
 
@@ -154,8 +163,12 @@ async function handleSubmit() {
                 </div>
 
                 <div class="flex items-center space-x-2">
-                    <Checkbox id="is_active" v-model:checked="formData.is_active" />
-                    <Label for="is_active">Serviço Ativo</Label>
+                    <Checkbox 
+                        id="is_active" 
+                        :model="isActiveCheckbox"
+                        @update:model-value="changeCheckbox"
+                    />
+                    <Label for="is_active" class="cursor-pointer">Serviço Ativo</Label>
                 </div>
 
                 <div class="flex justify-end space-x-2 pt-4">

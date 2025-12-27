@@ -167,8 +167,7 @@ function getTransmissionLabel(transmission?: string): string {
                                 Observações
                             </h3>
                             <p class="text-sm">
-                                {{ props.vehicle?.observations || 'Veículo em excelente estado de conservação. Cliente
-                                muito cuidadoso.' }}
+                                {{ props.vehicle?.observations || 'Veículo em excelente estado de conservação.' }}
                             </p>
                         </div>
                     </div>

@@ -24,7 +24,7 @@ Route::middleware([
     InitializeTenancyByDomain::class,
     PreventAccessFromCentralDomains::class,
 ])->group(function () {
-    
+
     // Welcome page
     Route::get('/', function () {
         return Inertia::render('Welcome');
@@ -42,13 +42,13 @@ Route::middleware([
 
         // Settings
         require __DIR__ . '/settings.php';
-        
+
         // Clients
         require __DIR__ . '/clients.php';
-        
+
         // Vehicles
         require __DIR__ . '/vehicles.php';
-        
+
         // Services
         require __DIR__ . '/services.php';
     });

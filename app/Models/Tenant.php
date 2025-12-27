@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Stancl\Tenancy\Database\Models\Tenant as BaseTenant;
@@ -13,6 +14,7 @@ class Tenant extends BaseTenant implements TenantWithDatabase
 {
     use HasDatabase;
     use HasDomains;
+    use HasFactory;
 
     /**
      * Disable automatic storage in the "data" column.
@@ -52,9 +54,6 @@ class Tenant extends BaseTenant implements TenantWithDatabase
         'settings',
     ];
 
-    /**
-     * Prevent automatic data column usage.
-     */
     protected $guarded = [];
 
     /**
@@ -68,53 +67,36 @@ class Tenant extends BaseTenant implements TenantWithDatabase
         'settings' => 'array',
     ];
 
-    /**
-     * Get the subscription plan for this tenant.
-     */
     public function subscriptionPlan(): BelongsTo
     {
         return $this->belongsTo(SubscriptionPlan::class);
     }
 
-    /**
-     * Check if tenant is on trial.
-     */
     public function isTrial(): bool
     {
-        return $this->subscription_status === 'trial' 
-            && $this->trial_ends_at 
+        return $this->subscription_status === 'trial'
+            && $this->trial_ends_at
             && $this->trial_ends_at->isFuture();
     }
 
-    /**
-     * Check if tenant trial has expired.
-     */
     public function trialExpired(): bool
     {
-        return $this->subscription_status === 'trial' 
-            && $this->trial_ends_at 
+        return $this->subscription_status === 'trial'
+            && $this->trial_ends_at
             && $this->trial_ends_at->isPast();
     }
 
-    /**
-     * Check if tenant subscription is active.
-     */
     public function isActiveSubscription(): bool
     {
         return $this->subscription_status === 'active' && $this->is_active;
     }
 
-    /**
-     * Check if tenant is suspended.
-     */
     public function isSuspended(): bool
     {
         return $this->subscription_status === 'suspended' || !$this->is_active;
     }
 
-    /**
-     * Check if tenant can use a specific feature.
-     */
+
     public function hasFeature(string $feature): bool
     {
         if (!$this->subscriptionPlan) {
@@ -125,9 +107,6 @@ class Tenant extends BaseTenant implements TenantWithDatabase
         return in_array($feature, $features);
     }
 
-    /**
-     * Check if tenant is within usage limit.
-     */
     public function withinLimit(string $resource, int $currentCount): bool
     {
         if (!$this->subscriptionPlan) {
