@@ -31,7 +31,8 @@
             "xdebug.php-debug",
             "shevaua.phpcs",
             "onecentlin.laravel-blade",
-            "onecentlin.laravel5-snippets"
+            "onecentlin.laravel5-snippets",
+            "eduwass.pest-autocomplete-support"
         ]
     }
 }

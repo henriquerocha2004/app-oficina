@@ -51,5 +51,14 @@ Route::middleware([
 
         // Services
         require __DIR__ . '/services.php';
+
+        // Products
+        require __DIR__ . '/products.php';
+
+        // Suppliers
+        require __DIR__ . '/suppliers.php';
+
+        // Stock Movements
+        require __DIR__ . '/stock-movements.php';
     });
 });

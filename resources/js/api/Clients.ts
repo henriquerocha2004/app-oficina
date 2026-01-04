@@ -1,15 +1,8 @@
 import { DefaultResponse } from '@/pages/Shared/Search/DefaultResponse';
-import { fetchWithErrorHandling } from './BaseApi';
+import { fetchWithErrorHandling, jsonHeaders } from './BaseApi';
 import type { SearchParams } from '@/pages/Shared/Search/SearchParams';
 import type { ClientFilterSearchResponse, ClientInterface } from '@/pages/clients/types';
 import clients from "@/routes/clients";
-
-const jsonHeaders = () => ({
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    'X-Requested-With': 'XMLHttpRequest',
-    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
-});
 
 export const ClientsApi = {
     search(params: SearchParams) {

@@ -6,7 +6,8 @@
   "shutdownAction": "stopCompose",
   
   // Dev Container gerencia usuários automaticamente
-  "remoteUser": "www-data",
+  "remoteUser": "root",
+  "updateRemoteUserUID": false,
   
   "customizations": {
     "vscode": {
@@ -101,7 +102,14 @@
         "shashraf.vscode-pestphp",
         "recca0120.vscode-phpunit",
         "vitest.explorer",
-        "jaguadoromero.vscode-php-create-class"
+        "jaguadoromero.vscode-php-create-class",
+        "shd101wyy.markdown-preview-enhanced",
+        "mtxr.sqltools-driver-mysql",
+        "cweijan.vscode-mysql-client2",
+        "laravel.vscode-laravel",
+        "MehediDracula.php-namespace-resolver",
+        "valeryanm.vscode-phpsab",
+        "eduwass.pest-autocomplete-support"
       ]
     }
   },
@@ -129,8 +137,6 @@
       "onAutoForward": "silent"
     }
   },
-  
-  "postCreateCommand": ".devcontainer/setup.sh",
   
   "features": {
     "ghcr.io/devcontainers/features/git:1": {}

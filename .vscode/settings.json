@@ -7,5 +7,9 @@
             "database": "./database/database.sqlite",
             "name": "AppOficina - App"
         }
+    ],
+    "intelephense.environment.includePaths": [
+        "vendor",
+        "/var/www/vendor"
     ]
 }

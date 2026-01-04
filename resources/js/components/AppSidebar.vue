@@ -7,10 +7,13 @@ import { dashboard } from '@/routes';
 import { index } from '@/routes/clients';
 import { index as indexCar } from '@/routes/vehicles';
 import { index as indexServices } from '@/routes/services';
+import { index as indexProducts } from '@/routes/products';
+import { index as indexSuppliers } from '@/routes/suppliers';
+import { index as indexStockMovements } from '@/routes/stockMovements';
 import admin from '@/routes/admin';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
-import { Banknote, BookOpen, Building2, Car, ClipboardPaste, Folder, LayoutGrid, Package, User, Wrench } from 'lucide-vue-next';
+import { Banknote, BookOpen, Building2, Car, ClipboardPaste, Folder, LayoutGrid, Package, User, Wrench, PackageOpen, Truck, BarChart3 } from 'lucide-vue-next';
 import { computed } from 'vue';
 import AppLogo from './AppLogo.vue';
 
@@ -49,9 +52,19 @@ const tenantNavItems: NavItem[] = [
         icon: ClipboardPaste,
     },
     {
-        title: 'Estoque',
-        href: '#',
-        icon: Package,
+        title: 'Produtos',
+        href: indexProducts(),
+        icon: PackageOpen,
+    },
+    {
+        title: 'Fornecedores',
+        href: indexSuppliers(),
+        icon: Truck,
+    },
+    {
+        title: 'Movimentações',
+        href: indexStockMovements(),
+        icon: BarChart3,
     },
     {
         title: 'Financeiro',

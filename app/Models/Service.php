@@ -7,6 +7,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Service active()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Service byCategory(string $category)
+ * @method static \Database\Factories\ServiceFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Service newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Service newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Service onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Service query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Service withTrashed(bool $withTrashed = true)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Service withoutTrashed()
+ * @mixin \Eloquent
+ */
 class Service extends Model
 {
     use HasFactory;

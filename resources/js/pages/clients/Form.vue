@@ -14,6 +14,7 @@ import SelectTrigger from '@/components/ui/select/SelectTrigger.vue';
 import SelectValue from '@/components/ui/select/SelectValue.vue';
 import Textarea from '@/components/ui/textarea/Textarea.vue';
 import brasilianStates from '@/constants/brasilianStates';
+import { useViaCep } from '@/composables/useViaCep';
 import { toTypedSchema } from '@vee-validate/zod'
 import { z } from 'zod';
 import { useForm } from 'vee-validate';
@@ -47,6 +48,7 @@ const form = useForm({
 const onSubmit = form.handleSubmit((values) => {
     emit('submitted', { mode: mode.value, data: normalizeFormData(values) });
 });
+const { fetchAddress } = useViaCep();
 const isProgramaticZipcodeChange = ref(false);
 let debounceTimeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -90,29 +92,17 @@ function fillValues() {
     });
 }
 
-function fetchAddressByZipcode(zipcode: string | undefined) {
-    if (!zipcode) return;
-    const cleaned = zipcode.replace(/\D/g, '');
-    if (cleaned.length !== 8) {
-        return;
+async function fetchAddressByZipcode(zipcode: string | undefined) {
+    if (!zipcode || isProgramaticZipcodeChange.value) return;
+    
+    const data = await fetchAddress(zipcode);
+    if (data) {
+        form.setValues({
+            address: data.logradouro || '',
+            city: data.localidade || '',
+            state: data.uf || '',
+        }, true);
     }
-
-    fetch(`https://viacep.com.br/ws/${cleaned}/json/`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.erro) {
-                return;
-            }
-
-            form.setValues({
-                address: data.logradouro || '',
-                city: data.localidade || '',
-                state: data.uf || '',
-            }, true);
-        })
-        .catch(error => {
-            console.error('Error fetching address:', error);
-        });
 }
 
 function clear() {

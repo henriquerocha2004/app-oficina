@@ -15,6 +15,21 @@ class TenantFactory extends Factory
     protected $model = Tenant::class;
 
     /**
+     * Configure the factory to suppress events during testing
+     */
+    public function configure(): static
+    {
+        return $this->afterCreating(function (Tenant $tenant) {
+            // Ensure domain is created for the tenant
+            if (!$tenant->domains()->exists()) {
+                $tenant->domains()->create([
+                    'domain' => $tenant->slug . '.localhost',
+                ]);
+            }
+        });
+    }
+
+    /**
      * Define the model's default state.
      *
      * @return array<string, mixed>
@@ -58,5 +73,37 @@ class TenantFactory extends Factory
         return $this->state(fn(array $attributes) => [
             'trial_ends_at' => now()->addDays(14),
         ]);
+    }
+
+    /**
+     * Create a model instance without firing tenant creation events
+     * This prevents automatic database creation during tests
+     */
+    public function create($attributes = [], ?\Illuminate\Database\Eloquent\Model $parent = null): mixed
+    {
+        return Tenant::withoutEvents(function () use ($attributes, $parent) {
+            return parent::create($attributes, $parent);
+        });
+    }
+
+    /**
+     * Create a model instance without firing tenant creation events
+     * This prevents automatic database creation during tests
+     */
+    public function createOne($attributes = []): mixed
+    {
+        return Tenant::withoutEvents(function () use ($attributes) {
+            return parent::createOne($attributes);
+        });
+    }
+
+    /**
+     * Create multiple model instances without firing events
+     */
+    public function createMany(iterable|int|null $records = null): \Illuminate\Database\Eloquent\Collection
+    {
+        return Tenant::withoutEvents(function () use ($records) {
+            return parent::createMany($records);
+        });
     }
 }

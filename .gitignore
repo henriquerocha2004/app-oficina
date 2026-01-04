@@ -35,6 +35,7 @@ yarn-error.log
 /.devcontainer/*
 !/.devcontainer/devcontainer.json
 !/.devcontainer/setup.sh
+!/.devcontainer/setup.sh
 /.config
 *.sql
 .bash_history

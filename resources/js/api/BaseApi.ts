@@ -17,3 +17,14 @@ export async function fetchWithErrorHandling<T>(url: string, options: RequestIni
         throw new Error('Resposta inválida do servidor');
     }
 }
+
+export const jsonHeaders = () => {
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    
+    return {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+        'X-CSRF-TOKEN': csrfToken || '',
+    };
+};

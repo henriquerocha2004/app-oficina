@@ -1,76 +1,53 @@
 #!/bin/bash
+set -e
 
 echo "🚀 Configurando ambiente de desenvolvimento App Oficina..."
 
-# Dar permissões corretas aos arquivos
-echo "🔐 Configurando permissões..."
-chown -R www-data:www-data /var/www
-chmod -R 755 /var/www
-
-# Instalar dependências PHP
-if [ ! -d "vendor" ]; then
-    echo "📦 Instalando dependências PHP com Composer..."
-    composer install --no-interaction --optimize-autoloader
-fi
-
-# Instalar dependências Node.js
-if [ ! -d "node_modules" ]; then
-    echo "📦 Instalando dependências Node.js..."
-    npm install
-fi
-
-# Configurar arquivo .env se não existir
-if [ ! -f ".env" ]; then
-    echo "⚙️ Criando arquivo .env..."
-    cp .env.example .env
-    php artisan key:generate --no-interaction
-fi
-
-# Configurar banco de dados
-if [ ! -f "database/database.sqlite" ]; then
-    echo "🗄️ Criando banco de dados SQLite..."
-    touch database/database.sqlite
-    chmod 664 database/database.sqlite
-fi
-
-# Configurar storage
-echo "📁 Configurando diretórios de storage..."
-php artisan storage:link --quiet 2>/dev/null || true
-
-# Executar migrações
-echo "🔄 Executando migrações..."
-php artisan migrate --force --no-interaction
-
-# Verificar PHPCS
-echo "🔍 Verificando configuração do PHP CodeSniffer..."
-if [ -f "vendor/bin/phpcs" ]; then
-    echo "✅ PHPCS instalado e configurado!"
-    vendor/bin/phpcs --version
-    
-    # Testar PHPCS
-    echo "🧪 Testando PHPCS..."
-    if vendor/bin/phpcs --standard=phpcs.xml --report=summary app/ 2>/dev/null; then
-        echo "✅ PHPCS funcionando perfeitamente!"
-    else
-        echo "⚠️ PHPCS configurado, mas encontrou alguns problemas no código"
-    fi
+# Só faz chown se for root
+if [ "$(id -u)" = "0" ]; then
+  echo "🔐 Ajustando permissões..."
+  chown -R www-data:www-data /var/www
+  chmod -R 755 /var/www
 else
-    echo "❌ PHPCS não encontrado!"
+  echo "⚠️ Ignorando chown (usuário não-root)"
 fi
 
-echo ""
-echo "✨ Configuração do Dev Container concluída!"
-echo ""
-echo "🌐 Serviços disponíveis:"
-echo "   - App: http://localhost:4500"
-echo "   - Vite: http://localhost:5173" 
-echo "   - Mailpit: http://localhost:4503"
-echo ""
-echo "🔧 Comandos úteis:"
-echo "   - composer phpcs:check  # Verificar código"
-echo "   - composer phpcbf       # Corrigir código"
-echo "   - npm run dev           # Iniciar Vite"
-echo "   - php artisan serve     # Servidor Laravel"
-echo ""
-echo "🎯 PHP CodeSniffer está pronto para usar nativamente!"
-echo ""
+# PHP deps
+if [ ! -d "vendor" ]; then
+  echo "📦 Instalando dependências PHP..."
+  composer install --no-interaction --prefer-dist --optimize-autoloader
+fi
+
+# Node deps
+if [ ! -d "node_modules" ]; then
+  echo "📦 Instalando dependências Node..."
+  npm install --no-audit --no-fund
+fi
+
+# .env
+if [ ! -f ".env" ]; then
+  echo "⚙️ Criando .env..."
+  cp .env.example .env
+  php artisan key:generate --no-interaction
+fi
+
+# Storage
+echo "📁 Configurando storage..."
+php artisan storage:link --quiet || true
+
+# Esperar banco antes de migrar
+echo "⏳ Aguardando banco de dados..."
+for i in {1..15}; do
+  php artisan migrate --force --no-interaction && break
+  echo "🔄 Banco ainda não disponível, tentando novamente..."
+  sleep 3
+done
+
+# PHPCS
+if [ -f "vendor/bin/phpcs" ]; then
+  echo "✅ PHPCS disponível"
+  vendor/bin/phpcs --version || true
+fi
+
+echo "✨ Dev Container configurado com sucesso!"
+

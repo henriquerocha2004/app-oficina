@@ -108,6 +108,9 @@ class SubscriptionPlanServiceTest extends TestCase
 
     public function testListPlansWithPagination(): void
     {
+        // Clean existing plans to avoid slug collision
+        SubscriptionPlan::query()->delete();
+
         SubscriptionPlan::factory()->count(15)->create();
 
         $searchDTO = SearchDTO::fromRequest(new \Illuminate\Http\Request([

@@ -2,7 +2,7 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { dashboard } from '@/routes';
 import { BreadcrumbItem } from '@/types';
-import { provide, ref } from 'vue';
+import { provide, ref, onBeforeUnmount } from 'vue';
 import Create from './Create.vue';
 import Table from './Table/Index.vue';
 import { columns } from './Table/columns';
@@ -50,6 +50,14 @@ function refreshTable() {
     tableComponent.value?.fetchClients();
 }
 
+onBeforeUnmount(() => {
+    showCreate.value = false;
+    showUpdate.value = false;
+    showInfo.value = false;
+    showDelete.value = false;
+    clientToEdit.value = null;
+    clientDelete.value = null;
+});
 
 </script>
 

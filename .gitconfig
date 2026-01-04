@@ -1,2 +1,2 @@
 [credential]
-	helper = "!f() { /var/www/.vscode-server/bin/7d842fb85a0275a4a8e4d7e040d2625abbf7f084/node /tmp/vscode-remote-containers-a41e8846-0647-4c82-9520-06eea0361510.js git-credential-helper $*; }; f"
+	helper = "!f() { /var/www/.vscode-server/bin/994fd12f8d3a5aa16f17d42c041e5809167e845a/node /tmp/vscode-remote-containers-ed7c195b-e151-434d-92e0-29395fdef0fa.js git-credential-helper $*; }; f"

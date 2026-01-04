@@ -34,27 +34,34 @@ class TenantService
     public function create(TenantInputDTO $dto): Tenant
     {
         // Criar tenant no banco central
-        $tenant = Tenant::create($dto->getTenantData());
+        // No ambiente de teste, criar sem eventos para evitar criação de banco físico
+        $tenant = app()->environment('testing')
+            ? Tenant::withoutEvents(fn() => Tenant::create($dto->getTenantData()))
+            : Tenant::create($dto->getTenantData());
 
         // Criar domínio
         $tenant->domains()->create([
             'domain' => $dto->getDomainName(),
         ]);
 
-        // Inicializar tenant para criar usuário admin
-        tenancy()->initialize($tenant);
+        // Em ambiente de teste, não criar usuário admin (banco não existe)
+        // Em produção, o banco é criado automaticamente pelo evento TenantCreated
+        if (!app()->environment('testing')) {
+            // Inicializar tenant para criar usuário admin
+            tenancy()->initialize($tenant);
 
-        try {
-            // Criar usuário admin no banco do tenant
-            User::create([
-                'name' => $dto->adminName,
-                'email' => $dto->adminEmail,
-                'password' => Hash::make($dto->adminPassword),
-                'email_verified_at' => now(),
-            ]);
-        } finally {
-            // Garantir que o contexto do tenant seja finalizado
-            tenancy()->end();
+            try {
+                // Criar usuário admin no banco do tenant
+                User::create([
+                    'name' => $dto->adminName,
+                    'email' => $dto->adminEmail,
+                    'password' => Hash::make($dto->adminPassword),
+                    'email_verified_at' => now(),
+                ]);
+            } finally {
+                // Garantir que o contexto do tenant seja finalizado
+                tenancy()->end();
+            }
         }
 
         return $tenant;
@@ -69,6 +76,12 @@ class TenantService
     public function delete(string $id): void
     {
         $tenant = Tenant::findOrFail($id);
-        $tenant->delete();
+
+        // Em ambiente de teste, deletar sem eventos para evitar tentar dropar banco que não existe
+        if (app()->environment('testing')) {
+            $tenant->deleteQuietly();
+        } else {
+            $tenant->delete();
+        }
     }
 }

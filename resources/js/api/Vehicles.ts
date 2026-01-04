@@ -1,15 +1,8 @@
 import { DefaultResponse } from '@/pages/Shared/Search/DefaultResponse';
-import { fetchWithErrorHandling } from './BaseApi';
+import { fetchWithErrorHandling, jsonHeaders } from './BaseApi';
 import type { SearchParams } from '@/pages/Shared/Search/SearchParams';
 import type { VehicleFilterSearchResponse, VehiclesInterface } from '@/pages/vehicles/types';
 import vehicles from "@/routes/vehicles";
-
-const jsonHeaders = () => ({
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    'X-Requested-With': 'XMLHttpRequest',
-    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
-});
 
 export const VehiclesApi = {
     search(params: SearchParams) {

@@ -2,7 +2,7 @@
 import { dashboard } from '@/routes';
 import { BreadcrumbItem } from '@/types';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { provide, ref } from 'vue';
+import { provide, ref, onBeforeUnmount } from 'vue';
 import { VehiclesInterface } from './types';
 import { columns } from './Table/columns';
 import Table from './Table/Index.vue';
@@ -51,6 +51,15 @@ function refreshTable() {
     tableComponent.value?.fetchCars();
 }
 
+onBeforeUnmount(() => {
+    showCreate.value = false;
+    showUpdate.value = false;
+    showInfo.value = false;
+    showDelete.value = false;
+    vehicleToEdit.value = null;
+    vehicleToView.value = null;
+    vehicleDelete.value = null;
+});
 
 </script>
 

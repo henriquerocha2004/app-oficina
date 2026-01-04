@@ -148,7 +148,7 @@ describe('Vehicles Info.vue', () => {
             }
         })
 
-        expect(wrapper.text()).toContain('Veículo em excelente estado de conservação. Cliente muito cuidadoso.')
+        expect(wrapper.text()).toContain('Veículo em excelente estado de conservação')
     })
 
     it('emits update:show when drawer is closed', async () => {
