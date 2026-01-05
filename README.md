@@ -169,7 +169,16 @@ O **App Oficina** é uma aplicação SaaS (Software as a Service) que permite qu
 
 Acesse a **[documentação completa](./docs/README.md)** para informações detalhadas sobre:
 
-- 📦 **[Sistema de Gestão de Estoque](./docs/inventory-system.md)**
+- � **[Sistema de Gerenciamento de Usuários](./docs/USER_MANAGEMENT.md)**
+  - Sistema de roles e permissões com 5 roles predefinidas
+  - Convites por email com definição de senha
+  - Impersonation para super admins
+  - Audit logs centralizados
+  - Proteção de usuário Owner
+  - Validação de limites do plano
+  - **[Quick Start](./docs/QUICK_START_USER_MANAGEMENT.md)**
+
+- �📦 **[Sistema de Gestão de Estoque](./docs/inventory-system.md)**
   - Cadastro de produtos com categorias e unidades
   - Controle de estoque em tempo real
   - Histórico completo de movimentações

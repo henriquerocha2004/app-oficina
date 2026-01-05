@@ -13,6 +13,15 @@ trait TenantTestHelper
     protected Tenant $tenant;
     protected static ?Tenant $sharedTenant = null;
     protected static bool $databaseCreated = false;
+    
+    /**
+     * Reset shared tenant for testing
+     */
+    public static function resetSharedTenant(): void
+    {
+        self::$sharedTenant = null;
+        self::$databaseCreated = false;
+    }
 
     /**
      * Initialize a test tenant reusing the same physical database across tests
@@ -27,18 +36,6 @@ trait TenantTestHelper
             return $this->tenant;
         }
 
-        // Create subscription plan if needed
-        $plan = SubscriptionPlan::firstOrCreate(
-            ['slug' => 'test-plan'],
-            [
-                'name' => 'Test Plan',
-                'price_monthly' => 0,
-                'price_yearly' => 0,
-                'limits' => ['users' => 10, 'clients' => 1000],
-                'features' => ['basic_features'],
-            ]
-        );
-
         // Use fixed tenant ID for shared tenant to avoid creating multiple databases
         $tenantId = empty($attributes) ? 'test-shared' : 'test-' . uniqid();
 
@@ -47,15 +44,30 @@ trait TenantTestHelper
 
         if ($existingTenant) {
             $this->tenant = $existingTenant;
+            // Get the plan ID from existing tenant
+            $planId = $existingTenant->subscription_plan_id;
         } else {
-            $this->tenant = Tenant::withoutEvents(function () use ($tenantId, $attributes, $plan) {
+            // Create subscription plan if needed (only when creating new tenant)
+            $plan = SubscriptionPlan::firstOrCreate(
+                ['slug' => 'test-plan'],
+                [
+                    'name' => 'Test Plan',
+                    'price_monthly' => 0,
+                    'price_yearly' => 0,
+                    'limits' => ['users' => 10, 'clients' => 1000],
+                    'features' => ['basic_features'],
+                ]
+            );
+            $planId = $plan->id;
+
+            $this->tenant = Tenant::withoutEvents(function () use ($tenantId, $attributes, $planId) {
                 return Tenant::create(array_merge([
                     'id' => $tenantId,
                     'slug' => $attributes['slug'] ?? $tenantId,
                     'name' => 'Test Tenant',
                     'email' => 'test@tenant.com',
                     'phone' => '(11) 99999-9999',
-                    'subscription_plan_id' => $plan->id,
+                    'subscription_plan_id' => $planId,
                     'subscription_status' => 'active',
                     'is_active' => true,
                 ], $attributes));

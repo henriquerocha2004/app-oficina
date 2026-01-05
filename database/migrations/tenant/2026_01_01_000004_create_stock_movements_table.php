@@ -41,10 +41,11 @@ return new class extends Migration
             $table->text('notes')->nullable();
 
             // Auditoria
-            $table->foreignId('user_id')
-                ->nullable()
-                ->constrained('users')
-                ->nullOnDelete();
+            $table->ulid('user_id')->nullable();
+            $table->foreign('user_id')
+                ->references('id')
+                ->on('users')
+                ->onDelete('set null');
 
             $table->timestamps();
 

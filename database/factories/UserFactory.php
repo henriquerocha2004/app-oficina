@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -41,5 +42,34 @@ class UserFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
         ]);
+    }
+
+    /**
+     * Indicate that the user is an owner.
+     */
+    public function owner(): static
+    {
+        return $this->state(function (array $attributes) {
+            $ownerRole = Role::where('slug', 'owner')->first();
+            
+            return [
+                'role_id' => $ownerRole?->id,
+                'is_owner' => true,
+            ];
+        });
+    }
+
+    /**
+     * Assign a specific role to the user.
+     */
+    public function withRole(string $roleSlug): static
+    {
+        return $this->state(function (array $attributes) use ($roleSlug) {
+            $role = Role::where('slug', $roleSlug)->first();
+            
+            return [
+                'role_id' => $role?->id,
+            ];
+        });
     }
 }

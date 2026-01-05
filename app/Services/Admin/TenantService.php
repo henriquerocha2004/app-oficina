@@ -5,12 +5,15 @@ namespace App\Services\Admin;
 use App\DTOs\Admin\TenantInputDTO;
 use App\DTOs\Admin\TenantUpdateDTO;
 use App\DTOs\SearchDTO;
+use App\Models\Role;
 use App\Models\SubscriptionPlan;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Services\Traits\QueryBuilderTrait;
+use Database\Seeders\RoleSeeder;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Hash;
 
 class TenantService
@@ -51,12 +54,20 @@ class TenantService
             tenancy()->initialize($tenant);
 
             try {
-                // Criar usuário admin no banco do tenant
+                // Seed roles and permissions
+                RoleSeeder::seedForTenant();
+
+                // Get Owner role
+                $ownerRole = Role::where('slug', 'owner')->first();
+
+                // Criar usuário admin no banco do tenant com role Owner
                 User::create([
                     'name' => $dto->adminName,
                     'email' => $dto->adminEmail,
                     'password' => Hash::make($dto->adminPassword),
                     'email_verified_at' => now(),
+                    'role_id' => $ownerRole?->id,
+                    'is_owner' => true,
                 ]);
             } finally {
                 // Garantir que o contexto do tenant seja finalizado

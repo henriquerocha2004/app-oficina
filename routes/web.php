@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminSubscriptionPlansController;
 use App\Http\Controllers\Admin\AdminTenantsController;
+use App\Http\Controllers\Admin\ImpersonationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -59,6 +60,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::put('/{id}', [AdminTenantsController::class, 'update'])->name('update');
             Route::delete('/{id}', [AdminTenantsController::class, 'destroy'])->name('destroy');
         });
+
+        // Impersonation
+        Route::post('/tenants/{tenant}/users/{user}/impersonate', [ImpersonationController::class, 'impersonate'])->name('impersonate');
+        Route::post('/stop-impersonating', [ImpersonationController::class, 'stopImpersonation'])->name('stop-impersonating');
+
+        // Impersonation Logs
+        Route::get('/impersonation-logs', [ImpersonationController::class, 'logs'])->name('impersonation-logs.index');
     });
 });
 

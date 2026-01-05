@@ -33,6 +33,12 @@ Route::middleware([
     // Authentication routes (cada tenant tem seus próprios usuários)
     require __DIR__ . '/auth.php';
 
+    // Public invitation accept routes
+    Route::get('/invitations/{token}/accept', [\App\Http\Controllers\InvitationsController::class, 'showAcceptForm'])
+        ->name('invitations.accept.show');
+    Route::post('/invitations/accept', [\App\Http\Controllers\InvitationsController::class, 'accept'])
+        ->name('invitations.accept');
+
     // Protected routes (requer autenticação)
     Route::group(['middleware' => ['auth', 'verified']], function () {
         // Dashboard
@@ -60,5 +66,14 @@ Route::middleware([
 
         // Stock Movements
         require __DIR__ . '/stock-movements.php';
+
+        // Users Management
+        require __DIR__ . '/users.php';
+
+        // Invitations
+        require __DIR__ . '/invitations.php';
+
+        // Roles & Permissions
+        require __DIR__ . '/roles.php';
     });
 });

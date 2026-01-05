@@ -1,5 +1,13 @@
 <?php
 
+use Illuminate\Foundation\Testing\RefreshDatabaseState;
+
+// Reset database migration state to ensure migrations run fresh
+// Note: Central database migrations must be run manually first.
+// See docs/TESTING_CENTRAL_MIGRATIONS.md for details.
+RefreshDatabaseState::$migrated = false;
+Tests\TestCase::resetCentralMigrations();
+
 /*
 |--------------------------------------------------------------------------
 | Test Case

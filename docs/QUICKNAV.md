@@ -1,6 +1,157 @@
 # 🚀 Navegação Rápida - Documentação
 
-## 📦 Sistema de Estoque
+## � Sistema de Gerenciamento de Usuários
+
+### Por Perfil de Usuário
+
+#### 👨‍💼 Owner/Proprietário do Tenant
+- **Como convidar novos usuários?** → [Guia de Convites](./QUICK_START_USER_MANAGEMENT.md#1-convidar-usuário)
+- **Como gerenciar roles?** → [Gerenciar Roles](./USER_MANAGEMENT.md#como-gerenciar-roles)
+- **Quais são as roles padrão?** → [Roles Predefinidas](./USER_MANAGEMENT.md#2-roles-predefinidas)
+- **Como customizar permissões?** → [Customizar Permissions](./USER_MANAGEMENT.md#customizar-permissions-de-uma-role)
+
+#### 🛠️ Super Admin
+- **Como usar impersonation?** → [Guia de Impersonation](./USER_MANAGEMENT.md#como-usar-impersonation-admin)
+- **Como ver logs de impersonation?** → [Audit Logs](./USER_MANAGEMENT.md#impersonation-admin-routes)
+- **Estrutura de segurança?** → [Segurança](./USER_MANAGEMENT.md#segurança)
+
+#### 👨‍💻 Desenvolvedor
+- **Arquitetura do sistema?** → [Arquitetura](./USER_MANAGEMENT.md#arquitetura-do-sistema)
+- **Fluxos principais?** → [Fluxos](./USER_MANAGEMENT.md#fluxos-principais)
+- **API Reference?** → [API Reference](./USER_MANAGEMENT.md#api-reference)
+- **Como testar?** → [Testes](./QUICK_START_USER_MANAGEMENT.md#-testando-localmente)
+- **DTOs e Services?** → [Componentes](./USER_MANAGEMENT.md#componentes-do-sistema)
+
+#### 🧪 QA/Tester
+- **Testes disponíveis?** → [Tests Backend](./QUICK_START_USER_MANAGEMENT.md#tests-)
+- **Como testar fluxo de convite?** → [Testar Convite](./QUICK_START_USER_MANAGEMENT.md#1-testar-fluxo-de-convite)
+- **Como testar impersonation?** → [Testar Impersonation](./QUICK_START_USER_MANAGEMENT.md#2-testar-impersonation)
+
+### Por Funcionalidade
+
+#### 👥 Usuários
+- ✅ [Sistema de Convites por Email](./USER_MANAGEMENT.md#1-fluxo-de-convite-de-usuário)
+- ✅ [CRUD de Usuários](./USER_MANAGEMENT.md#users)
+- ✅ [Alteração de Roles](./USER_MANAGEMENT.md#como-gerenciar-roles)
+- ✅ [Proteção do Owner](./USER_MANAGEMENT.md#1-proteção-do-owner)
+- ✅ [Validação de Limites do Plano](./USER_MANAGEMENT.md#validação-de-plano)
+
+#### 🔐 Roles e Permissões
+- ✅ [5 Roles Predefinidas](./USER_MANAGEMENT.md#2-roles-predefinidas)
+- ✅ [Roles Customizáveis](./USER_MANAGEMENT.md#criar-nova-role)
+- ✅ [~35 Permissões por Módulo](./USER_MANAGEMENT.md#3-módulos-de-permissões)
+- ✅ [Gerenciamento Visual](./USER_MANAGEMENT.md#pages)
+- ✅ [Sincronização de Permissões](./USER_MANAGEMENT.md#roles)
+
+#### 📧 Convites
+- ✅ [Criar e Enviar Convites](./QUICK_START_USER_MANAGEMENT.md#2-convidar-usuário)
+- ✅ [Reenviar Convites](./USER_MANAGEMENT.md#invitations)
+- ✅ [Cancelar Convites](./USER_MANAGEMENT.md#invitations)
+- ✅ [Aceitar Convite (Público)](./QUICK_START_USER_MANAGEMENT.md#3-aceitar-convite)
+- ✅ [Validação de Expiração](./USER_MANAGEMENT.md#2-validação-de-convites)
+
+#### 🎭 Impersonation (Admin)
+- ✅ [Sessões de Impersonation](./USER_MANAGEMENT.md#2-fluxo-de-impersonation)
+- ✅ [Audit Logs Centralizados](./USER_MANAGEMENT.md#central-database)
+- ✅ [Banner de Impersonation](./USER_MANAGEMENT.md#components)
+- ✅ [Segurança e Rastreamento](./USER_MANAGEMENT.md#3-impersonation-security)
+
+### Por Tecnologia
+
+#### Backend (Laravel/PHP)
+```bash
+# Models:
+app/Models/User.php                    # Enhanced com HasRoleAndPermissions trait
+app/Models/Role.php
+app/Models/Permission.php
+app/Models/UserInvitation.php
+app/Models/ImpersonationLog.php
+
+# Services:
+app/Services/UserService.php
+app/Services/InvitationService.php
+app/Services/RoleService.php
+app/Services/Admin/ImpersonationService.php
+
+# Controllers:
+app/Http/Controllers/UsersController.php
+app/Http/Controllers/InvitationsController.php
+app/Http/Controllers/RolesController.php
+app/Http/Controllers/PermissionsController.php
+app/Http/Controllers/Admin/ImpersonationController.php
+
+# DTOs:
+app/DTOs/UserInputDTO.php
+app/DTOs/InvitationInputDTO.php
+app/DTOs/RoleInputDTO.php
+# ... (8 DTOs no total)
+
+# Middleware:
+app/Http/Middleware/ShareImpersonationState.php
+```
+
+#### Frontend (Vue 3 + TypeScript)
+```bash
+# Pages:
+resources/js/pages/users/Index.vue
+resources/js/pages/users/Invite.vue
+resources/js/pages/users/ChangeRole.vue
+resources/js/pages/roles/Index.vue
+resources/js/pages/roles/Create.vue
+resources/js/pages/roles/ManagePermissions.vue
+resources/js/pages/invitations/Index.vue
+resources/js/pages/invitations/Accept.vue
+resources/js/pages/admin/impersonation-logs/Index.vue
+
+# Components:
+resources/js/components/ImpersonationBanner.vue
+resources/js/components/admin/ImpersonateUserDialog.vue
+
+# Types:
+resources/js/types/user-management.ts
+```
+
+#### Testes
+```bash
+# Unit Tests:
+tests/Unit/Services/InvitationServiceTest.php
+tests/Unit/Services/UserServiceTest.php
+tests/Unit/Services/ImpersonationServiceTest.php
+tests/Unit/Models/UserTest.php
+
+# Feature Tests:
+tests/Feature/InvitationsControllerTest.php
+tests/Feature/UsersControllerTest.php
+tests/Feature/RolesControllerTest.php
+```
+
+#### Database
+```bash
+# Tenant Migrations:
+database/migrations/2026_01_04_184435_create_roles_table.php
+database/migrations/2026_01_04_184456_create_permissions_table.php
+database/migrations/2026_01_04_184459_create_permission_role_table.php
+database/migrations/2026_01_04_184501_add_role_fields_to_users_table.php
+database/migrations/2026_01_04_184824_create_user_invitations_table.php
+
+# Central Migration:
+database/migrations/central/2026_01_04_190012_create_impersonation_logs_table.php
+
+# Seeders:
+database/seeders/RoleSeeder.php         # 5 roles + ~35 permissions
+```
+
+### Recursos Visuais
+
+- 🔄 [Fluxo de Convite](./USER_MANAGEMENT.md#1-fluxo-de-convite-de-usuário)
+- 🎭 [Fluxo de Impersonation](./USER_MANAGEMENT.md#2-fluxo-de-impersonation)
+- 🏗️ [Fluxo de Criação de Tenant](./USER_MANAGEMENT.md#3-fluxo-de-criação-de-tenant)
+- 💾 [Database Schema](./USER_MANAGEMENT.md#1-database-schema)
+- 🔐 [Arquitetura de Segurança](./USER_MANAGEMENT.md#segurança)
+
+---
+
+## �📦 Sistema de Estoque
 
 ### Por Perfil de Usuário
 
