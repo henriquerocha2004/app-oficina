@@ -1,21 +1,19 @@
 {
   "name": "App Oficina - Laravel Dev Container",
-  "dockerComposeFile": ["../docker-compose.yml"],
+  "dockerComposeFile": [
+    "../docker-compose.yml"
+  ],
+  "remoteUser": "root",
+  "postCreateCommand": "chmod +x .devcontainer/setup.sh && ./.devcontainer/setup.sh",
   "service": "oficina-app",
   "workspaceFolder": "/var/www",
   "shutdownAction": "stopCompose",
-  
-  // Dev Container gerencia usuários automaticamente
-  "remoteUser": "root",
-  "updateRemoteUserUID": false,
-  
   "customizations": {
     "vscode": {
       "settings": {
         // PHP Settings
         "php.validate.executablePath": "/usr/local/bin/php",
         "php.debug.executablePath": "/usr/local/bin/php",
-        
         // PHP CodeSniffer - Funcionará nativamente no container
         "phpcs.executablePath": "/var/www/vendor/bin/phpcs",
         "phpcs.standard": "/var/www/phpcs.xml",
@@ -28,7 +26,6 @@
           "*/storage/*",
           "*/bootstrap/cache/*"
         ],
-        
         // PHP Intelephense
         "intelephense.files.exclude": [
           "**/.git/**",
@@ -44,7 +41,6 @@
         ],
         "intelephense.environment.phpVersion": "8.4.0",
         "intelephense.files.maxSize": 5000000,
-        
         // Formatting
         "editor.formatOnSave": true,
         "editor.defaultFormatter": "bmewburn.vscode-intelephense-client",
@@ -52,15 +48,12 @@
           "editor.defaultFormatter": "bmewburn.vscode-intelephense-client",
           "editor.formatOnSave": true
         },
-        
         // Files
         "files.associations": {
           "*.blade.php": "php"
         },
-        
         // Terminal
         "terminal.integrated.defaultProfile.linux": "bash",
-        
         // Git
         "git.openRepositoryInParentFolders": "never",
         // Configurações específicas do Pest
@@ -68,22 +61,19 @@
         "pestphp.pestExecutable": "/var/www/vendor/bin/pest",
         "pestphp.enableCodeLens": true,
         "pestphp.enableGutter": true,
-        
         // Configurações do PHPUnit (fallback)
-        // "phpunit.php": "/usr/local/bin/php",
-        // "phpunit.phpunit": "/var/www/vendor/bin/pest",
-        // "phpunit.command": "/var/www/vendor/bin/pest",
-        // "phpunit.args": [
-        //   "--colors=never",
-        //   "--teamcity"
-        // ],
-        
+        "phpunit.php": "/usr/local/bin/php",
+        "phpunit.phpunit": "/var/www/vendor/bin/pest",
+        "phpunit.command": "/var/www/vendor/bin/pest",
+        "phpunit.args": [
+          "--colors=never",
+          "--teamcity"
+        ],
         // Path mapping
         "phpunit.paths": {
           "/var/www": "/var/www"
         }
       },
-      
       "extensions": [
         "bmewburn.vscode-intelephense-client",
         "xdebug.php-debug",
@@ -113,15 +103,20 @@
       ]
     }
   },
-  
-  "forwardPorts": [5173, 4500, 4502, 4503, 9003],
+  "forwardPorts": [
+    5173,
+    4500,
+    4502,
+    4503,
+    9003
+  ],
   "portsAttributes": {
     "5173": {
       "label": "Vite Dev Server",
       "onAutoForward": "notify"
     },
     "4500": {
-      "label": "Nginx Web Server", 
+      "label": "Nginx Web Server",
       "onAutoForward": "openBrowser"
     },
     "4502": {
@@ -137,7 +132,6 @@
       "onAutoForward": "silent"
     }
   },
-  
   "features": {
     "ghcr.io/devcontainers/features/git:1": {}
   }
